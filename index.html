@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CoreMedia - Professional Media Player</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="logo">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                    <path d="M8 5v14l11-7z" fill="currentColor"/>
+                </svg>
+                <h1>CoreMedia</h1>
+            </div>
+            <div class="header-controls">
+                <button class="btn-icon" id="openFileBtn" title="Open File">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"/>
+                    </svg>
+                </button>
+                <button class="btn-icon" id="openUrlBtn" title="Open URL">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
+                        <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
+                    </svg>
+                </button>
+                <button class="btn-icon" id="settingsBtn" title="Settings">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="3"/>
+                        <path d="M12 1v6m0 6v6m0-18a2 2 0 01-2 2H4a2 2 0 01-2-2m20 0a2 2 0 00-2 2h-6a2 2 0 00-2-2"/>
+                    </svg>
+                </button>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Sidebar -->
+            <aside class="sidebar">
+                <div class="sidebar-section">
+                    <h3>Playlist</h3>
+                    <div class="playlist" id="playlist">
+                        <div class="playlist-empty">No media loaded</div>
+                    </div>
+                    <div class="playlist-controls">
+                        <button class="btn-small" id="clearPlaylistBtn">Clear All</button>
+                        <button class="btn-small" id="shuffleBtn">Shuffle</button>
+                    </div>
+                </div>
+
+                <!-- DJ Controls -->
+                <div class="sidebar-section dj-section">
+                    <h3>DJ Controls</h3>
+
+                    <!-- BPM Display -->
+                    <div class="bpm-display">
+                        <div class="bpm-label">BPM</div>
+                        <div class="bpm-value" id="bpmValue">--</div>
+                        <button class="bpm-tap-btn" id="bpmTapBtn">Tap Tempo</button>
+                    </div>
+
+                    <!-- Pitch Control -->
+                    <div class="pitch-control">
+                        <div class="pitch-slider-container">
+                            <div class="pitch-slider-wrapper">
+                                <input type="range" min="-16" max="16" value="0" step="0.1" class="pitch-slider" id="pitchSlider">
+                                <div class="pitch-value" id="pitchValue">0.0%</div>
+                            </div>
+                        </div>
+                        <div class="pitch-buttons">
+                            <button class="pitch-btn" data-pitch="-8">-8%</button>
+                            <button class="pitch-btn" data-pitch="0">Reset</button>
+                            <button class="pitch-btn" data-pitch="8">+8%</button>
+                        </div>
+                    </div>
+
+                    <!-- Hot Cues -->
+                    <div class="hot-cues">
+                        <button class="cue-btn cue-1" data-cue="1">
+                            <span class="cue-label">CUE 1</span>
+                            <span class="cue-time"></span>
+                        </button>
+                        <button class="cue-btn cue-2" data-cue="2">
+                            <span class="cue-label">CUE 2</span>
+                            <span class="cue-time"></span>
+                        </button>
+                        <button class="cue-btn cue-3" data-cue="3">
+                            <span class="cue-label">CUE 3</span>
+                            <span class="cue-time"></span>
+                        </button>
+                        <button class="cue-btn cue-4" data-cue="4">
+                            <span class="cue-label">CUE 4</span>
+                            <span class="cue-time"></span>
+                        </button>
+                        <button class="cue-btn cue-5" data-cue="5">
+                            <span class="cue-label">CUE 5</span>
+                            <span class="cue-time"></span>
+                        </button>
+                        <button class="cue-btn cue-6" data-cue="6">
+                            <span class="cue-label">CUE 6</span>
+                            <span class="cue-time"></span>
+                        </button>
+                        <button class="cue-btn cue-7" data-cue="7">
+                            <span class="cue-label">CUE 7</span>
+                            <span class="cue-time"></span>
+                        </button>
+                        <button class="cue-btn cue-8" data-cue="8">
+                            <span class="cue-label">CUE 8</span>
+                            <span class="cue-time"></span>
+                        </button>
+                    </div>
+
+                    <!-- Loop Controls -->
+                    <div class="loop-controls">
+                        <button class="loop-btn" id="loopInBtn">Loop In</button>
+                        <button class="loop-btn" id="loopOutBtn">Loop Out</button>
+                        <button class="loop-btn" id="loop2Btn">2 Beat</button>
+                        <button class="loop-btn" id="loop4Btn">4 Beat</button>
+                        <button class="loop-btn" id="loop8Btn">8 Beat</button>
+                        <button class="loop-btn" id="loopExitBtn">Exit Loop</button>
+                    </div>
+
+                    <!-- Crossfader -->
+                    <div class="crossfader-section">
+                        <div class="crossfader-labels">
+                            <span class="crossfader-label-a">DECK A</span>
+                            <span class="crossfader-label-b">DECK B</span>
+                        </div>
+                        <div class="crossfader-container">
+                            <input type="range" min="0" max="100" value="50" class="crossfader" id="crossfader">
+                        </div>
+                        <div class="crossfader-value" id="crossfaderValue">CENTER</div>
+                    </div>
+
+                    <!-- Beat Grid -->
+                    <div class="beat-grid-section">
+                        <div class="beat-grid-header">
+                            <label>Beat Grid</label>
+                            <input type="checkbox" id="beatGridToggle" class="effect-toggle">
+                        </div>
+                        <div class="beat-grid-controls">
+                            <button class="btn-small" id="analyzeBeatBtn">Analyze Beats</button>
+                            <div class="param-control">
+                                <label>Offset</label>
+                                <input type="range" min="0" max="2" value="0" step="0.01" id="beatGridOffset" class="param-slider">
+                                <span class="param-value">0.00s</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Effects Rack -->
+                <div class="sidebar-section dj-section">
+                    <h3>Effects Rack</h3>
+
+                    <!-- Reverb -->
+                    <div class="effect-control">
+                        <div class="effect-header">
+                            <label>Reverb</label>
+                            <input type="checkbox" id="reverbToggle" class="effect-toggle">
+                        </div>
+                        <div class="effect-params">
+                            <div class="param-control">
+                                <label>Mix</label>
+                                <input type="range" min="0" max="100" value="30" id="reverbMix" class="param-slider">
+                                <span class="param-value">30%</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Delay -->
+                    <div class="effect-control">
+                        <div class="effect-header">
+                            <label>Delay</label>
+                            <input type="checkbox" id="delayToggle" class="effect-toggle">
+                        </div>
+                        <div class="effect-params">
+                            <div class="param-control">
+                                <label>Time</label>
+                                <input type="range" min="0" max="2000" value="500" id="delayTime" class="param-slider">
+                                <span class="param-value">500ms</span>
+                            </div>
+                            <div class="param-control">
+                                <label>Feedback</label>
+                                <input type="range" min="0" max="90" value="40" id="delayFeedback" class="param-slider">
+                                <span class="param-value">40%</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Filter -->
+                    <div class="effect-control">
+                        <div class="effect-header">
+                            <label>Filter</label>
+                            <input type="checkbox" id="filterToggle" class="effect-toggle">
+                        </div>
+                        <div class="effect-params">
+                            <div class="param-control">
+                                <label>Frequency</label>
+                                <input type="range" min="20" max="20000" value="1000" id="filterFreq" class="param-slider" step="1">
+                                <span class="param-value">1000Hz</span>
+                            </div>
+                            <div class="param-control">
+                                <label>Resonance</label>
+                                <input type="range" min="0" max="30" value="1" id="filterQ" class="param-slider" step="0.1">
+                                <span class="param-value">1</span>
+                            </div>
+                            <div class="param-control">
+                                <select id="filterType" class="filter-type-select">
+                                    <option value="lowpass">Low Pass</option>
+                                    <option value="highpass">High Pass</option>
+                                    <option value="bandpass">Band Pass</option>
+                                    <option value="notch">Notch</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="effect-presets">
+                        <button class="btn-small" id="savePresetBtn">Save Preset</button>
+                        <button class="btn-small" id="loadPresetBtn">Load Preset</button>
+                    </div>
+                </div>
+
+                <!-- Spectral Analyzer Controls -->
+                <div class="sidebar-section">
+                    <h3>Spectral Analyzer</h3>
+                    <div class="spectral-controls">
+                        <div class="spectral-header">
+                            <label>Enable</label>
+                            <input type="checkbox" id="spectralToggle" class="effect-toggle">
+                        </div>
+                        <div class="param-control">
+                            <label>Mode</label>
+                            <select id="spectralMode" class="filter-type-select">
+                                <option value="spectrogram">Spectrogram</option>
+                                <option value="waterfall">Waterfall</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recording & Export -->
+                <div class="sidebar-section">
+                    <h3>Recording & Export</h3>
+                    <div class="recording-controls">
+                        <div class="recording-buttons">
+                            <button class="btn-record" id="recordBtn">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                    <circle cx="12" cy="12" r="8"/>
+                                </svg>
+                                Record
+                            </button>
+                            <button class="btn-stop-record" id="stopRecordBtn" disabled>
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                    <rect x="6" y="6" width="12" height="12"/>
+                                </svg>
+                                Stop
+                            </button>
+                        </div>
+                        <div class="recording-status" id="recordingStatus" style="display: none;">Ready</div>
+                        <button class="btn-export" id="exportAudioBtn">Export Track</button>
+                    </div>
+                </div>
+
+                <!-- Loop Slicer -->
+                <div class="sidebar-section">
+                    <h3>Loop Slicer</h3>
+                    <div class="slicer-controls">
+                        <div class="slicer-header">
+                            <label>Enable</label>
+                            <input type="checkbox" id="slicerToggle" class="effect-toggle">
+                        </div>
+                        <div class="param-control">
+                            <label>Divisions</label>
+                            <select id="slicerDivisions" class="filter-type-select">
+                                <option value="4">4 Slices</option>
+                                <option value="8" selected>8 Slices</option>
+                                <option value="16">16 Slices</option>
+                            </select>
+                        </div>
+                        <button class="btn-small" id="sliceLoopBtn">Slice Loop</button>
+                    </div>
+                </div>
+
+                <div class="sidebar-section">
+                    <h3>Equalizer</h3>
+                    <div class="equalizer">
+                        <div class="eq-band">
+                            <label>60Hz</label>
+                            <input type="range" min="-12" max="12" value="0" class="eq-slider" data-freq="60">
+                            <span class="eq-value">0</span>
+                        </div>
+                        <div class="eq-band">
+                            <label>170Hz</label>
+                            <input type="range" min="-12" max="12" value="0" class="eq-slider" data-freq="170">
+                            <span class="eq-value">0</span>
+                        </div>
+                        <div class="eq-band">
+                            <label>310Hz</label>
+                            <input type="range" min="-12" max="12" value="0" class="eq-slider" data-freq="310">
+                            <span class="eq-value">0</span>
+                        </div>
+                        <div class="eq-band">
+                            <label>600Hz</label>
+                            <input type="range" min="-12" max="12" value="0" class="eq-slider" data-freq="600">
+                            <span class="eq-value">0</span>
+                        </div>
+                        <div class="eq-band">
+                            <label>1kHz</label>
+                            <input type="range" min="-12" max="12" value="0" class="eq-slider" data-freq="1000">
+                            <span class="eq-value">0</span>
+                        </div>
+                        <div class="eq-band">
+                            <label>3kHz</label>
+                            <input type="range" min="-12" max="12" value="0" class="eq-slider" data-freq="3000">
+                            <span class="eq-value">0</span>
+                        </div>
+                        <div class="eq-band">
+                            <label>6kHz</label>
+                            <input type="range" min="-12" max="12" value="0" class="eq-slider" data-freq="6000">
+                            <span class="eq-value">0</span>
+                        </div>
+                        <div class="eq-band">
+                            <label>12kHz</label>
+                            <input type="range" min="-12" max="12" value="0" class="eq-slider" data-freq="12000">
+                            <span class="eq-value">0</span>
+                        </div>
+                        <div class="eq-band">
+                            <label>14kHz</label>
+                            <input type="range" min="-12" max="12" value="0" class="eq-slider" data-freq="14000">
+                            <span class="eq-value">0</span>
+                        </div>
+                        <div class="eq-band">
+                            <label>16kHz</label>
+                            <input type="range" min="-12" max="12" value="0" class="eq-slider" data-freq="16000">
+                            <span class="eq-value">0</span>
+                        </div>
+                    </div>
+                    <button class="btn-small" id="resetEqBtn">Reset EQ</button>
+                </div>
+            </aside>
+
+            <!-- Video Area -->
+            <div class="video-container">
+                <div class="drop-zone" id="dropZone">
+                    <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <path d="M8 5v14l11-7z"/>
+                    </svg>
+                    <p>Drop media files here or click to browse</p>
+                    <p class="drop-zone-hint">Supports: MP4, MKV, AVI, MOV, WebM, MP3, WAV, FLAC, OGG, and more</p>
+                </div>
+                <video id="videoPlayer" class="video-player"></video>
+                <audio id="audioPlayer" class="audio-player"></audio>
+
+                <!-- Waveform Display -->
+                <div class="waveform-container" id="waveformContainer">
+                    <canvas id="waveform" class="waveform"></canvas>
+                    <canvas id="beatGridCanvas" class="beat-grid-canvas"></canvas>
+                    <div class="waveform-progress" id="waveformProgress"></div>
+                    <div class="waveform-controls">
+                        <button class="waveform-btn" id="waveformZoomIn" title="Zoom In">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="11" cy="11" r="8"/>
+                                <path d="M21 21l-4.35-4.35M11 8v6M8 11h6"/>
+                            </svg>
+                        </button>
+                        <button class="waveform-btn" id="waveformZoomOut" title="Zoom Out">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="11" cy="11" r="8"/>
+                                <path d="M21 21l-4.35-4.35M8 11h6"/>
+                            </svg>
+                        </button>
+                        <button class="waveform-btn" id="waveformToggle" title="Toggle Waveform">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M12 2v20M6 8v8M18 8v8"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- VU Meters -->
+                <div class="vu-meters" id="vuMeters">
+                    <div class="vu-meter">
+                        <div class="vu-label">L</div>
+                        <div class="vu-bar">
+                            <div class="vu-fill" id="vuLeft"></div>
+                        </div>
+                    </div>
+                    <div class="vu-meter">
+                        <div class="vu-label">R</div>
+                        <div class="vu-bar">
+                            <div class="vu-fill" id="vuRight"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Audio Visualizer -->
+                <canvas id="visualizer" class="visualizer"></canvas>
+
+                <!-- Spectral Analyzer -->
+                <div class="spectral-container" id="spectralContainer">
+                    <canvas id="spectralCanvas" class="spectral-canvas"></canvas>
+                </div>
+
+                <!-- Loop Slicer Pads -->
+                <div class="slicer-pads" id="slicerPads">
+                    <div class="slicer-pad" id="slicerPad1"><span class="pad-label">1</span><span class="pad-time"></span></div>
+                    <div class="slicer-pad" id="slicerPad2"><span class="pad-label">2</span><span class="pad-time"></span></div>
+                    <div class="slicer-pad" id="slicerPad3"><span class="pad-label">3</span><span class="pad-time"></span></div>
+                    <div class="slicer-pad" id="slicerPad4"><span class="pad-label">4</span><span class="pad-time"></span></div>
+                    <div class="slicer-pad" id="slicerPad5"><span class="pad-label">5</span><span class="pad-time"></span></div>
+                    <div class="slicer-pad" id="slicerPad6"><span class="pad-label">6</span><span class="pad-time"></span></div>
+                    <div class="slicer-pad" id="slicerPad7"><span class="pad-label">7</span><span class="pad-time"></span></div>
+                    <div class="slicer-pad" id="slicerPad8"><span class="pad-label">8</span><span class="pad-time"></span></div>
+                    <div class="slicer-pad" id="slicerPad9"><span class="pad-label">9</span><span class="pad-time"></span></div>
+                    <div class="slicer-pad" id="slicerPad10"><span class="pad-label">10</span><span class="pad-time"></span></div>
+                    <div class="slicer-pad" id="slicerPad11"><span class="pad-label">11</span><span class="pad-time"></span></div>
+                    <div class="slicer-pad" id="slicerPad12"><span class="pad-label">12</span><span class="pad-time"></span></div>
+                    <div class="slicer-pad" id="slicerPad13"><span class="pad-label">13</span><span class="pad-time"></span></div>
+                    <div class="slicer-pad" id="slicerPad14"><span class="pad-label">14</span><span class="pad-time"></span></div>
+                    <div class="slicer-pad" id="slicerPad15"><span class="pad-label">15</span><span class="pad-time"></span></div>
+                    <div class="slicer-pad" id="slicerPad16"><span class="pad-label">16</span><span class="pad-time"></span></div>
+                </div>
+
+                <!-- Subtitles -->
+                <div class="subtitles" id="subtitles"></div>
+
+                <!-- Video Info Overlay -->
+                <div class="video-info" id="videoInfo">
+                    <div class="info-item"><span id="currentTitle">No media</span></div>
+                </div>
+
+                <!-- Controls Overlay -->
+                <div class="controls-overlay" id="controlsOverlay">
+                    <div class="progress-container">
+                        <div class="progress-bar" id="progressBar">
+                            <div class="progress-filled" id="progressFilled"></div>
+                            <div class="progress-hover" id="progressHover"></div>
+                        </div>
+                        <div class="time-display">
+                            <span id="currentTime">0:00</span>
+                            <span id="duration">0:00</span>
+                        </div>
+                    </div>
+
+                    <div class="controls">
+                        <div class="controls-left">
+                            <button class="btn-control" id="previousBtn" title="Previous (P)">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/>
+                                </svg>
+                            </button>
+                            <button class="btn-control btn-play" id="playBtn" title="Play/Pause (Space)">
+                                <svg width="32" height="32" viewBox="0 0 24 24" fill="currentColor" class="play-icon">
+                                    <path d="M8 5v14l11-7z"/>
+                                </svg>
+                                <svg width="32" height="32" viewBox="0 0 24 24" fill="currentColor" class="pause-icon" style="display:none;">
+                                    <path d="M6 4h4v16H6zM14 4h4v16h-4z"/>
+                                </svg>
+                            </button>
+                            <button class="btn-control" id="nextBtn" title="Next (N)">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M16 18h2V6h-2zm-11-1l8.5-6L5 5z"/>
+                                </svg>
+                            </button>
+                            <button class="btn-control" id="stopBtn" title="Stop (S)">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                                    <rect x="6" y="6" width="12" height="12"/>
+                                </svg>
+                            </button>
+                        </div>
+
+                        <div class="controls-center">
+                            <button class="btn-control" id="rewind10" title="Rewind 10s (Left Arrow)">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M2.5 2v6h6M2.66 15.57a10 10 0 1 0 .57-8.38"/>
+                                </svg>
+                                <span class="skip-label">10</span>
+                            </button>
+                            <button class="btn-control" id="forward10" title="Forward 10s (Right Arrow)">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38"/>
+                                </svg>
+                                <span class="skip-label">10</span>
+                            </button>
+                            <div class="speed-control">
+                                <button class="btn-control" id="speedBtn" title="Playback Speed">
+                                    <span id="speedDisplay">1x</span>
+                                </button>
+                                <div class="speed-menu" id="speedMenu">
+                                    <div class="speed-option" data-speed="0.25">0.25x</div>
+                                    <div class="speed-option" data-speed="0.5">0.5x</div>
+                                    <div class="speed-option" data-speed="0.75">0.75x</div>
+                                    <div class="speed-option active" data-speed="1">1x</div>
+                                    <div class="speed-option" data-speed="1.25">1.25x</div>
+                                    <div class="speed-option" data-speed="1.5">1.5x</div>
+                                    <div class="speed-option" data-speed="2">2x</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="controls-right">
+                            <button class="btn-control" id="loopBtn" title="Loop (L)">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M17 1l4 4-4 4"/>
+                                    <path d="M3 11V9a4 4 0 014-4h14"/>
+                                    <path d="M7 23l-4-4 4-4"/>
+                                    <path d="M21 13v2a4 4 0 01-4 4H3"/>
+                                </svg>
+                            </button>
+                            <button class="btn-control" id="subtitlesBtn" title="Subtitles (C)">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <rect x="2" y="4" width="20" height="16" rx="2"/>
+                                    <path d="M6 8h.01M10 8h.01M14 8h.01M18 8h.01M6 12h.01M10 12h.01M14 12h.01M18 12h.01M6 16h8"/>
+                                </svg>
+                            </button>
+                            <div class="volume-control">
+                                <button class="btn-control" id="muteBtn" title="Mute (M)">
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" class="volume-icon">
+                                        <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/>
+                                    </svg>
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" class="mute-icon" style="display:none;">
+                                        <path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z"/>
+                                    </svg>
+                                </button>
+                                <input type="range" min="0" max="100" value="100" class="volume-slider" id="volumeSlider">
+                            </div>
+                            <button class="btn-control" id="fullscreenBtn" title="Fullscreen (F)">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M8 3H5a2 2 0 00-2 2v3m18 0V5a2 2 0 00-2-2h-3m0 18h3a2 2 0 002-2v-3M3 16v3a2 2 0 002 2h3"/>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modals -->
+    <div class="modal" id="urlModal">
+        <div class="modal-content">
+            <h2>Open URL</h2>
+            <input type="text" id="urlInput" placeholder="Enter media URL (http:// or https://)" class="url-input">
+            <div class="modal-buttons">
+                <button class="btn" id="urlOpenBtn">Open</button>
+                <button class="btn btn-secondary" id="urlCancelBtn">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="settingsModal">
+        <div class="modal-content settings-content">
+            <h2>Settings</h2>
+            <div class="settings-grid">
+                <div class="setting-item">
+                    <label>
+                        <input type="checkbox" id="autoplayNext"> Autoplay next in playlist
+                    </label>
+                </div>
+                <div class="setting-item">
+                    <label>
+                        <input type="checkbox" id="rememberVolume" checked> Remember volume
+                    </label>
+                </div>
+                <div class="setting-item">
+                    <label>
+                        <input type="checkbox" id="showVisualizer" checked> Show audio visualizer
+                    </label>
+                </div>
+                <div class="setting-item">
+                    <label>
+                        <input type="checkbox" id="hardwareAccel" checked> Hardware acceleration
+                    </label>
+                </div>
+                <div class="setting-item">
+                    <label for="skipDuration">Skip duration (seconds):</label>
+                    <input type="number" id="skipDuration" value="10" min="5" max="60">
+                </div>
+                <div class="setting-item">
+                    <label for="visualizerStyle">Visualizer style:</label>
+                    <select id="visualizerStyle">
+                        <option value="bars">Bars</option>
+                        <option value="wave">Waveform</option>
+                        <option value="circle">Circular</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-buttons">
+                <button class="btn" id="settingsCloseBtn">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Keyboard Help Modal -->
+    <div class="modal" id="helpModal">
+        <div class="modal-content help-content">
+            <h2>Keyboard Shortcuts</h2>
+            <div class="help-grid">
+                <div class="help-section">
+                    <h3>Playback</h3>
+                    <div class="help-item"><kbd>Space</kbd><span>Play/Pause</span></div>
+                    <div class="help-item"><kbd>S</kbd><span>Stop</span></div>
+                    <div class="help-item"><kbd>N</kbd><span>Next Track</span></div>
+                    <div class="help-item"><kbd>P</kbd><span>Previous Track</span></div>
+                    <div class="help-item"><kbd>←</kbd><span>Skip Backward</span></div>
+                    <div class="help-item"><kbd>→</kbd><span>Skip Forward</span></div>
+                </div>
+                <div class="help-section">
+                    <h3>Volume & Display</h3>
+                    <div class="help-item"><kbd>M</kbd><span>Mute/Unmute</span></div>
+                    <div class="help-item"><kbd>↑</kbd><span>Volume Up</span></div>
+                    <div class="help-item"><kbd>↓</kbd><span>Volume Down</span></div>
+                    <div class="help-item"><kbd>F</kbd><span>Fullscreen</span></div>
+                    <div class="help-item"><kbd>C</kbd><span>Load Subtitles</span></div>
+                    <div class="help-item"><kbd>L</kbd><span>Toggle Loop</span></div>
+                </div>
+                <div class="help-section">
+                    <h3>DJ Controls</h3>
+                    <div class="help-item"><kbd>1-8</kbd><span>Set/Jump Cue Point</span></div>
+                    <div class="help-item"><kbd>Shift+1-8</kbd><span>Delete Cue Point</span></div>
+                    <div class="help-item"><kbd>+</kbd><span>Pitch Up</span></div>
+                    <div class="help-item"><kbd>-</kbd><span>Pitch Down</span></div>
+                    <div class="help-item"><kbd>W</kbd><span>Toggle Waveform</span></div>
+                    <div class="help-item"><kbd>?</kbd><span>Show This Help</span></div>
+                </div>
+            </div>
+            <div class="modal-buttons">
+                <button class="btn" id="helpCloseBtn">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <input type="file" id="fileInput" accept="video/*,audio/*" multiple style="display:none;">
+    <input type="file" id="subtitleInput" accept=".srt,.vtt,.ass" style="display:none;">
+
+    <script src="app.js"></script>
+</body>
+</html>

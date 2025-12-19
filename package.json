@@ -1,0 +1,12 @@
+{
+  "name": "coremedia",
+  "version": "1.0.0",
+  "description": "Professional media player with advanced features",
+  "main": "index.html",
+  "scripts": {
+    "start": "npx http-server -p 8080"
+  },
+  "keywords": ["media", "player", "video", "audio"],
+  "author": "",
+  "license": "MIT"
+}
