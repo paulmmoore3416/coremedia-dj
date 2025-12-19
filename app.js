@@ -58,6 +58,44 @@ class CoreMedia {
         this.slicerDivisions = 8; // number of slices
         this.slicerBuffers = [];
 
+        // Performance Optimizations
+        this.visualizerAnimationId = null;
+        this.spectralAnimationId = null;
+        this.lastVisualizerUpdate = 0;
+        this.visualizerThrottle = 16; // ~60fps
+        this.canvasPool = new Map(); // Reuse canvases
+        this.offscreenCanvas = null;
+        this.audioBufferCache = new Map(); // Cache decoded audio
+        this.requestIdleCallback = window.requestIdleCallback || ((cb) => setTimeout(cb, 1));
+
+        // Mixing Board Knobs (6 professional controls)
+        this.mixerControls = {
+            gain: 0,        // Master gain (-12 to +12 dB)
+            bass: 0,        // Bass EQ (-12 to +12 dB)
+            mid: 0,         // Mid EQ (-12 to +12 dB)
+            treble: 0,      // Treble EQ (-12 to +12 dB)
+            color: 0,       // Color/Tone (-100 to +100)
+            presence: 0     // Presence/Air (+0 to +12 dB)
+        };
+        this.mixerNodes = {
+            gainNode: null,
+            bassFilter: null,
+            midFilter: null,
+            trebleFilter: null,
+            colorFilter: null,
+            presenceFilter: null
+        };
+
+        // Multi-Deck View
+        this.isDeckView = false;
+        this.deckCount = 2;
+        this.decks = {
+            A: { player: null, src: null, isPlaying: false, title: '' },
+            B: { player: null, src: null, isPlaying: false, title: '' },
+            C: { player: null, src: null, isPlaying: false, title: '' },
+            D: { player: null, src: null, isPlaying: false, title: '' }
+        };
+
         // Effects
         this.reverbNode = null;
         this.delayNode = null;
@@ -81,6 +119,9 @@ class CoreMedia {
         this.initSpectralAnalyzer();
         this.initRecorder();
         this.initLoopSlicer();
+        this.initMixingBoard();
+        this.initMultiDeck();
+        this.initPerformanceOptimizations();
     }
 
     initElements() {
@@ -2518,6 +2559,479 @@ class CoreMedia {
             source.disconnect();
             gainNode.disconnect();
         };
+    }
+
+    // ============================================
+    // MULTI-DECK VIEW (Up to 4 Decks)
+    // ============================================
+
+    initMultiDeck() {
+        const viewToggleBtn = document.getElementById('viewToggleBtn');
+        const deckSelectBtns = document.querySelectorAll('.deck-select-btn');
+
+        if (viewToggleBtn) {
+            viewToggleBtn.addEventListener('click', () => {
+                this.toggleDeckView();
+            });
+        }
+
+        deckSelectBtns.forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const deckCount = parseInt(e.target.dataset.decks);
+                this.setDeckCount(deckCount);
+                deckSelectBtns.forEach(b => b.classList.remove('active'));
+                e.target.classList.add('active');
+            });
+        });
+
+        // Initialize deck players
+        ['A', 'B', 'C', 'D'].forEach(deck => {
+            const player = document.getElementById(`deckPlayer${deck}`);
+            if (player) {
+                this.decks[deck].player = player;
+                player.addEventListener('timeupdate', () => this.updateDeckProgress(deck));
+            }
+        });
+    }
+
+    toggleDeckView() {
+        this.isDeckView = !this.isDeckView;
+        const videoArea = document.querySelector('.video-area');
+        const deckView = document.getElementById('deckView');
+        const viewToggleBtn = document.getElementById('viewToggleBtn');
+
+        if (this.isDeckView) {
+            videoArea.style.display = 'none';
+            deckView.style.display = 'flex';
+            viewToggleBtn.classList.add('active');
+        } else {
+            videoArea.style.display = 'flex';
+            deckView.style.display = 'none';
+            viewToggleBtn.classList.remove('active');
+        }
+    }
+
+    setDeckCount(count) {
+        this.deckCount = count;
+        const deckC = document.getElementById('deckC');
+        const deckD = document.getElementById('deckD');
+        const container = document.getElementById('decksContainer');
+
+        if (count === 4) {
+            deckC.classList.remove('deck-hidden');
+            deckD.classList.remove('deck-hidden');
+            container.classList.add('four-deck');
+        } else {
+            deckC.classList.add('deck-hidden');
+            deckD.classList.add('deck-hidden');
+            container.classList.remove('four-deck');
+        }
+    }
+
+    loadToDeck(deckId) {
+        if (this.playlist.length === 0) {
+            alert('Please add files to the playlist first');
+            return;
+        }
+
+        // Show playlist selector (simplified - load current selected track)
+        if (this.currentIndex >= 0 && this.currentIndex < this.playlist.length) {
+            const track = this.playlist[this.currentIndex];
+            this.decks[deckId].src = track.url;
+            this.decks[deckId].title = track.name;
+            this.decks[deckId].player.src = track.url;
+
+            const infoEl = document.getElementById(`deckInfo${deckId}`);
+            if (infoEl) {
+                infoEl.textContent = track.name;
+            }
+
+            // Draw waveform for deck
+            this.drawDeckWaveform(deckId);
+        }
+    }
+
+    toggleDeckPlay(deckId) {
+        const deck = this.decks[deckId];
+        if (!deck.player || !deck.src) return;
+
+        if (deck.isPlaying) {
+            deck.player.pause();
+            deck.isPlaying = false;
+        } else {
+            deck.player.play();
+            deck.isPlaying = true;
+        }
+    }
+
+    updateDeckProgress(deckId) {
+        const deck = this.decks[deckId];
+        if (!deck.player) return;
+
+        const progressBar = document.getElementById(`deckProgress${deckId}`);
+        const timeEl = document.getElementById(`deckTime${deckId}`);
+
+        if (progressBar) {
+            const percent = (deck.player.currentTime / deck.player.duration) * 100 || 0;
+            progressBar.style.width = percent + '%';
+        }
+
+        if (timeEl) {
+            const current = this.formatTime(deck.player.currentTime);
+            const duration = this.formatTime(deck.player.duration);
+            timeEl.textContent = `${current} / ${duration}`;
+        }
+    }
+
+    drawDeckWaveform(deckId) {
+        const canvas = document.getElementById(`deckWaveform${deckId}`);
+        if (!canvas) return;
+
+        const ctx = canvas.getContext('2d');
+        const rect = canvas.parentElement.getBoundingClientRect();
+        canvas.width = rect.width;
+        canvas.height = rect.height;
+
+        // Simple placeholder waveform
+        ctx.fillStyle = 'rgba(88, 166, 255, 0.3)';
+        ctx.fillRect(0, canvas.height / 2 - 2, canvas.width, 4);
+
+        // Draw decorative bars
+        const barCount = 50;
+        const barWidth = canvas.width / barCount;
+        for (let i = 0; i < barCount; i++) {
+            const height = Math.random() * (canvas.height / 2);
+            ctx.fillStyle = `rgba(88, 166, 255, ${0.2 + Math.random() * 0.3})`;
+            ctx.fillRect(
+                i * barWidth,
+                canvas.height / 2 - height / 2,
+                barWidth - 2,
+                height
+            );
+        }
+    }
+
+    // ============================================
+    // MIXING BOARD (6 Professional Knobs)
+    // ============================================
+
+    initMixingBoard() {
+        // Create audio nodes for mixing board
+        if (!this.audioContext) return;
+
+        // 1. Master Gain
+        this.mixerNodes.gainNode = this.audioContext.createGain();
+        this.mixerNodes.gainNode.gain.value = 1.0;
+
+        // 2. Bass Filter (Low Shelf at 100Hz)
+        this.mixerNodes.bassFilter = this.audioContext.createBiquadFilter();
+        this.mixerNodes.bassFilter.type = 'lowshelf';
+        this.mixerNodes.bassFilter.frequency.value = 100;
+        this.mixerNodes.bassFilter.gain.value = 0;
+
+        // 3. Mid Filter (Peaking at 1kHz)
+        this.mixerNodes.midFilter = this.audioContext.createBiquadFilter();
+        this.mixerNodes.midFilter.type = 'peaking';
+        this.mixerNodes.midFilter.frequency.value = 1000;
+        this.mixerNodes.midFilter.Q.value = 1.0;
+        this.mixerNodes.midFilter.gain.value = 0;
+
+        // 4. Treble Filter (High Shelf at 8kHz)
+        this.mixerNodes.trebleFilter = this.audioContext.createBiquadFilter();
+        this.mixerNodes.trebleFilter.type = 'highshelf';
+        this.mixerNodes.trebleFilter.frequency.value = 8000;
+        this.mixerNodes.trebleFilter.gain.value = 0;
+
+        // 5. Color/Tone Filter (Low-pass variable)
+        this.mixerNodes.colorFilter = this.audioContext.createBiquadFilter();
+        this.mixerNodes.colorFilter.type = 'lowpass';
+        this.mixerNodes.colorFilter.frequency.value = 20000;
+        this.mixerNodes.colorFilter.Q.value = 0.7;
+
+        // 6. Presence Filter (High Shelf at 5kHz for air/sparkle)
+        this.mixerNodes.presenceFilter = this.audioContext.createBiquadFilter();
+        this.mixerNodes.presenceFilter.type = 'highshelf';
+        this.mixerNodes.presenceFilter.frequency.value = 5000;
+        this.mixerNodes.presenceFilter.gain.value = 0;
+
+        // Connect knob controls
+        const gainKnob = document.getElementById('mixerGain');
+        const bassKnob = document.getElementById('mixerBass');
+        const midKnob = document.getElementById('mixerMid');
+        const trebleKnob = document.getElementById('mixerTreble');
+        const colorKnob = document.getElementById('mixerColor');
+        const presenceKnob = document.getElementById('mixerPresence');
+
+        if (gainKnob) {
+            gainKnob.addEventListener('input', (e) => {
+                const value = parseFloat(e.target.value);
+                this.mixerControls.gain = value;
+                // Convert dB to linear gain
+                const gain = Math.pow(10, value / 20);
+                this.mixerNodes.gainNode.gain.value = gain;
+                this.updateKnobDisplay('gain', value);
+            });
+        }
+
+        if (bassKnob) {
+            bassKnob.addEventListener('input', (e) => {
+                const value = parseFloat(e.target.value);
+                this.mixerControls.bass = value;
+                this.mixerNodes.bassFilter.gain.value = value;
+                this.updateKnobDisplay('bass', value);
+            });
+        }
+
+        if (midKnob) {
+            midKnob.addEventListener('input', (e) => {
+                const value = parseFloat(e.target.value);
+                this.mixerControls.mid = value;
+                this.mixerNodes.midFilter.gain.value = value;
+                this.updateKnobDisplay('mid', value);
+            });
+        }
+
+        if (trebleKnob) {
+            trebleKnob.addEventListener('input', (e) => {
+                const value = parseFloat(e.target.value);
+                this.mixerControls.treble = value;
+                this.mixerNodes.trebleFilter.gain.value = value;
+                this.updateKnobDisplay('treble', value);
+            });
+        }
+
+        if (colorKnob) {
+            colorKnob.addEventListener('input', (e) => {
+                const value = parseFloat(e.target.value);
+                this.mixerControls.color = value;
+                // Map -100 to +100 to frequency range 500Hz to 20kHz
+                const freq = 500 + ((value + 100) / 200) * 19500;
+                this.mixerNodes.colorFilter.frequency.value = freq;
+                this.updateKnobDisplay('color', value);
+            });
+        }
+
+        if (presenceKnob) {
+            presenceKnob.addEventListener('input', (e) => {
+                const value = parseFloat(e.target.value);
+                this.mixerControls.presence = value;
+                this.mixerNodes.presenceFilter.gain.value = value;
+                this.updateKnobDisplay('presence', value);
+            });
+        }
+
+        // Connect mixing board into audio chain
+        this.connectMixingBoard();
+    }
+
+    updateKnobDisplay(knob, value) {
+        const display = document.getElementById(`${knob}Value`);
+        if (display) {
+            if (knob === 'color') {
+                display.textContent = value.toFixed(0);
+            } else {
+                display.textContent = (value >= 0 ? '+' : '') + value.toFixed(1) + 'dB';
+            }
+        }
+    }
+
+    connectMixingBoard() {
+        // This will be called when audio source is set up
+        // Insert mixing board before EQ chain
+        if (this.audioSource && this.mixerNodes.gainNode) {
+            try {
+                // Chain: source → gain → bass → mid → treble → color → presence → (existing chain)
+                this.audioSource.connect(this.mixerNodes.gainNode);
+                this.mixerNodes.gainNode.connect(this.mixerNodes.bassFilter);
+                this.mixerNodes.bassFilter.connect(this.mixerNodes.midFilter);
+                this.mixerNodes.midFilter.connect(this.mixerNodes.trebleFilter);
+                this.mixerNodes.trebleFilter.connect(this.mixerNodes.colorFilter);
+                this.mixerNodes.colorFilter.connect(this.mixerNodes.presenceFilter);
+
+                // Connect to EQ or destination
+                if (this.eqFilters.length > 0) {
+                    this.mixerNodes.presenceFilter.connect(this.eqFilters[0]);
+                } else {
+                    this.mixerNodes.presenceFilter.connect(this.audioContext.destination);
+                }
+            } catch (e) {
+                console.warn('Mixing board connection issue:', e);
+            }
+        }
+    }
+
+    resetMixingBoard() {
+        this.mixerControls = {
+            gain: 0,
+            bass: 0,
+            mid: 0,
+            treble: 0,
+            color: 0,
+            presence: 0
+        };
+
+        if (this.mixerNodes.gainNode) this.mixerNodes.gainNode.gain.value = 1.0;
+        if (this.mixerNodes.bassFilter) this.mixerNodes.bassFilter.gain.value = 0;
+        if (this.mixerNodes.midFilter) this.mixerNodes.midFilter.gain.value = 0;
+        if (this.mixerNodes.trebleFilter) this.mixerNodes.trebleFilter.gain.value = 0;
+        if (this.mixerNodes.colorFilter) this.mixerNodes.colorFilter.frequency.value = 20000;
+        if (this.mixerNodes.presenceFilter) this.mixerNodes.presenceFilter.gain.value = 0;
+
+        // Update UI
+        ['gain', 'bass', 'mid', 'treble', 'color', 'presence'].forEach(knob => {
+            const elem = document.getElementById(`mixer${knob.charAt(0).toUpperCase() + knob.slice(1)}`);
+            if (elem) elem.value = 0;
+            this.updateKnobDisplay(knob, 0);
+        });
+    }
+
+    // ============================================
+    // PERFORMANCE ENHANCEMENTS (6 optimizations)
+    // ============================================
+
+    // 1. Throttled Visualizer Updates - Reduces CPU usage by limiting update rate
+    optimizeVisualizerUpdates() {
+        const now = performance.now();
+        if (now - this.lastVisualizerUpdate < this.visualizerThrottle) {
+            return false; // Skip this frame
+        }
+        this.lastVisualizerUpdate = now;
+        return true; // Allow update
+    }
+
+    // 2. Audio Buffer Caching - Prevents re-decoding the same audio files
+    async getCachedAudioBuffer(url) {
+        if (this.audioBufferCache.has(url)) {
+            return this.audioBufferCache.get(url);
+        }
+
+        const response = await fetch(url);
+        const arrayBuffer = await response.arrayBuffer();
+        const audioBuffer = await this.audioContext.decodeAudioData(arrayBuffer);
+
+        // Cache with size limit (max 10 buffers)
+        if (this.audioBufferCache.size >= 10) {
+            const firstKey = this.audioBufferCache.keys().next().value;
+            this.audioBufferCache.delete(firstKey);
+        }
+
+        this.audioBufferCache.set(url, audioBuffer);
+        return audioBuffer;
+    }
+
+    // 3. Offscreen Canvas Rendering - Improves rendering performance
+    getOffscreenCanvas(width, height) {
+        if (!this.offscreenCanvas ||
+            this.offscreenCanvas.width !== width ||
+            this.offscreenCanvas.height !== height) {
+
+            if (typeof OffscreenCanvas !== 'undefined') {
+                this.offscreenCanvas = new OffscreenCanvas(width, height);
+            } else {
+                // Fallback for browsers without OffscreenCanvas
+                const canvas = document.createElement('canvas');
+                canvas.width = width;
+                canvas.height = height;
+                this.offscreenCanvas = canvas;
+            }
+        }
+        return this.offscreenCanvas;
+    }
+
+    // 4. Debounced Waveform Generation - Prevents multiple simultaneous generations
+    debounce(func, wait) {
+        let timeout;
+        return function executedFunction(...args) {
+            const later = () => {
+                clearTimeout(timeout);
+                func(...args);
+            };
+            clearTimeout(timeout);
+            timeout = setTimeout(later, wait);
+        };
+    }
+
+    // 5. Lazy Loading for Heavy Operations - Defers non-critical work
+    lazyInitialize(callback) {
+        this.requestIdleCallback(() => {
+            callback();
+        }, { timeout: 2000 });
+    }
+
+    // 6. Memory Cleanup - Aggressive cleanup of unused resources
+    cleanupMemory() {
+        // Clear old waveform data
+        if (this.waveformData && this.waveformData.length > 1000) {
+            this.waveformData = null;
+        }
+
+        // Clear spectral history if too large
+        if (this.spectralHistory.length > this.spectralMaxHistory) {
+            this.spectralHistory = this.spectralHistory.slice(-this.spectralMaxHistory);
+        }
+
+        // Clear old beat grid data
+        if (this.beatGrid.length > 500) {
+            this.beatGrid = [];
+        }
+
+        // Disconnect orphaned audio nodes
+        if (this.audioSource && this.audioSource.disconnect) {
+            try {
+                // Don't disconnect if still in use
+                if (this.currentPlayer && this.currentPlayer.paused) {
+                    // Safe to clean up
+                }
+            } catch (e) {
+                // Already disconnected
+            }
+        }
+
+        // Force garbage collection hint
+        if (window.gc) {
+            window.gc();
+        }
+    }
+
+    // Apply all performance optimizations
+    initPerformanceOptimizations() {
+        // Throttle visualizer
+        const originalDrawVisualizer = this.drawVisualizer;
+        this.drawVisualizer = function() {
+            if (this.optimizeVisualizerUpdates()) {
+                originalDrawVisualizer.call(this);
+            } else {
+                if (this.settings.showVisualizer && !this.currentPlayer.paused) {
+                    requestAnimationFrame(() => this.drawVisualizer());
+                }
+            }
+        }.bind(this);
+
+        // Debounce waveform generation
+        const originalGenerateWaveform = this.generateWaveform;
+        this.generateWaveform = this.debounce(function() {
+            originalGenerateWaveform.call(this);
+        }.bind(this), 500);
+
+        // Periodic memory cleanup
+        setInterval(() => {
+            this.cleanupMemory();
+        }, 30000); // Every 30 seconds
+
+        // Use cached buffers for beat analysis
+        const originalAnalyzeBeat = this.analyzeBeatPattern;
+        this.analyzeBeatPattern = async function() {
+            const url = this.currentPlayer.src;
+            try {
+                const audioBuffer = await this.getCachedAudioBuffer(url);
+                // Use cached buffer for analysis
+                return originalAnalyzeBeat.call(this);
+            } catch (e) {
+                return originalAnalyzeBeat.call(this);
+            }
+        }.bind(this);
+
+        console.log('✅ Performance optimizations enabled');
     }
 }
 

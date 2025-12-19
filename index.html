@@ -34,6 +34,14 @@
                         <path d="M12 1v6m0 6v6m0-18a2 2 0 01-2 2H4a2 2 0 01-2-2m20 0a2 2 0 00-2 2h-6a2 2 0 00-2-2"/>
                     </svg>
                 </button>
+                <button class="btn-icon view-toggle" id="viewToggleBtn" title="Toggle DJ View">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="3" width="7" height="7"/>
+                        <rect x="14" y="3" width="7" height="7"/>
+                        <rect x="3" y="14" width="7" height="7"/>
+                        <rect x="14" y="14" width="7" height="7"/>
+                    </svg>
+                </button>
             </div>
         </header>
 
@@ -287,6 +295,50 @@
                     </div>
                 </div>
 
+                <!-- Mixing Board -->
+                <div class="sidebar-section">
+                    <h3>Mixing Board</h3>
+                    <div class="mixing-board">
+                        <div class="mixer-knob-group">
+                            <div class="mixer-knob">
+                                <label>GAIN</label>
+                                <input type="range" min="-12" max="12" value="0" step="0.1" id="mixerGain" class="knob-input">
+                                <div class="knob-value" id="gainValue">+0.0dB</div>
+                            </div>
+                            <div class="mixer-knob">
+                                <label>BASS</label>
+                                <input type="range" min="-12" max="12" value="0" step="0.1" id="mixerBass" class="knob-input">
+                                <div class="knob-value" id="bassValue">+0.0dB</div>
+                            </div>
+                        </div>
+                        <div class="mixer-knob-group">
+                            <div class="mixer-knob">
+                                <label>MID</label>
+                                <input type="range" min="-12" max="12" value="0" step="0.1" id="mixerMid" class="knob-input">
+                                <div class="knob-value" id="midValue">+0.0dB</div>
+                            </div>
+                            <div class="mixer-knob">
+                                <label>TREBLE</label>
+                                <input type="range" min="-12" max="12" value="0" step="0.1" id="mixerTreble" class="knob-input">
+                                <div class="knob-value" id="trebleValue">+0.0dB</div>
+                            </div>
+                        </div>
+                        <div class="mixer-knob-group">
+                            <div class="mixer-knob">
+                                <label>COLOR</label>
+                                <input type="range" min="-100" max="100" value="0" step="1" id="mixerColor" class="knob-input">
+                                <div class="knob-value" id="colorValue">0</div>
+                            </div>
+                            <div class="mixer-knob">
+                                <label>PRESENCE</label>
+                                <input type="range" min="0" max="12" value="0" step="0.1" id="mixerPresence" class="knob-input">
+                                <div class="knob-value" id="presenceValue">+0.0dB</div>
+                            </div>
+                        </div>
+                        <button class="btn-small mixer-reset" onclick="player.resetMixingBoard()">Reset All</button>
+                    </div>
+                </div>
+
                 <div class="sidebar-section">
                     <h3>Equalizer</h3>
                     <div class="equalizer">
@@ -535,6 +587,111 @@
                                     <path d="M8 3H5a2 2 0 00-2 2v3m18 0V5a2 2 0 00-2-2h-3m0 18h3a2 2 0 002-2v-3M3 16v3a2 2 0 002 2h3"/>
                                 </svg>
                             </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Multi-Deck DJ View (Hidden by default) -->
+            <div class="deck-view" id="deckView" style="display: none;">
+                <div class="deck-selector">
+                    <button class="deck-select-btn active" data-decks="2">2 Decks</button>
+                    <button class="deck-select-btn" data-decks="4">4 Decks</button>
+                </div>
+                <div class="decks-container" id="decksContainer">
+                    <!-- Deck A -->
+                    <div class="deck" id="deckA">
+                        <div class="deck-header">
+                            <h3>DECK A</h3>
+                            <button class="deck-load-btn" onclick="player.loadToDeck('A')">Load Track</button>
+                        </div>
+                        <div class="deck-display">
+                            <video class="deck-player" id="deckPlayerA"></video>
+                            <canvas class="deck-waveform" id="deckWaveformA"></canvas>
+                            <div class="deck-info" id="deckInfoA">No track loaded</div>
+                        </div>
+                        <div class="deck-controls">
+                            <button class="deck-btn-play" onclick="player.toggleDeckPlay('A')">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M8 5v14l11-7z"/>
+                                </svg>
+                            </button>
+                            <div class="deck-progress">
+                                <div class="deck-progress-bar" id="deckProgressA"></div>
+                            </div>
+                            <div class="deck-time" id="deckTimeA">0:00 / 0:00</div>
+                        </div>
+                    </div>
+
+                    <!-- Deck B -->
+                    <div class="deck" id="deckB">
+                        <div class="deck-header">
+                            <h3>DECK B</h3>
+                            <button class="deck-load-btn" onclick="player.loadToDeck('B')">Load Track</button>
+                        </div>
+                        <div class="deck-display">
+                            <video class="deck-player" id="deckPlayerB"></video>
+                            <canvas class="deck-waveform" id="deckWaveformB"></canvas>
+                            <div class="deck-info" id="deckInfoB">No track loaded</div>
+                        </div>
+                        <div class="deck-controls">
+                            <button class="deck-btn-play" onclick="player.toggleDeckPlay('B')">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M8 5v14l11-7z"/>
+                                </svg>
+                            </button>
+                            <div class="deck-progress">
+                                <div class="deck-progress-bar" id="deckProgressB"></div>
+                            </div>
+                            <div class="deck-time" id="deckTimeB">0:00 / 0:00</div>
+                        </div>
+                    </div>
+
+                    <!-- Deck C (4-deck mode only) -->
+                    <div class="deck deck-hidden" id="deckC">
+                        <div class="deck-header">
+                            <h3>DECK C</h3>
+                            <button class="deck-load-btn" onclick="player.loadToDeck('C')">Load Track</button>
+                        </div>
+                        <div class="deck-display">
+                            <video class="deck-player" id="deckPlayerC"></video>
+                            <canvas class="deck-waveform" id="deckWaveformC"></canvas>
+                            <div class="deck-info" id="deckInfoC">No track loaded</div>
+                        </div>
+                        <div class="deck-controls">
+                            <button class="deck-btn-play" onclick="player.toggleDeckPlay('C')">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M8 5v14l11-7z"/>
+                                </svg>
+                            </button>
+                            <div class="deck-progress">
+                                <div class="deck-progress-bar" id="deckProgressC"></div>
+                            </div>
+                            <div class="deck-time" id="deckTimeC">0:00 / 0:00</div>
+                        </div>
+                    </div>
+
+                    <!-- Deck D (4-deck mode only) -->
+                    <div class="deck deck-hidden" id="deckD">
+                        <div class="deck-header">
+                            <h3>DECK D</h3>
+                            <button class="deck-load-btn" onclick="player.loadToDeck('D')">Load Track</button>
+                        </div>
+                        <div class="deck-display">
+                            <video class="deck-player" id="deckPlayerD"></video>
+                            <canvas class="deck-waveform" id="deckWaveformD"></canvas>
+                            <div class="deck-info" id="deckInfoD">No track loaded</div>
+                        </div>
+                        <div class="deck-controls">
+                            <button class="deck-btn-play" onclick="player.toggleDeckPlay('D')">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M8 5v14l11-7z"/>
+                                </svg>
+                            </button>
+                            <div class="deck-progress">
+                                <div class="deck-progress-bar" id="deckProgressD"></div>
+                            </div>
+                            <div class="deck-time" id="deckTimeD">0:00 / 0:00</div>
                         </div>
                     </div>
                 </div>

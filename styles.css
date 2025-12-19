@@ -1607,6 +1607,334 @@ body {
     color: white;
 }
 
+/* Mixing Board */
+.mixing-board {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding: 12px;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 8px;
+}
+
+.mixer-knob-group {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+
+.mixer-knob {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    padding: 12px;
+    background: radial-gradient(circle at 50% 120%, rgba(33, 38, 45, 0.8), rgba(13, 17, 23, 0.9));
+    border: 2px solid rgba(88, 166, 255, 0.2);
+    border-radius: 12px;
+    position: relative;
+}
+
+.mixer-knob::before {
+    content: '';
+    position: absolute;
+    top: -1px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60%;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, rgba(88, 166, 255, 0.4), transparent);
+}
+
+.mixer-knob label {
+    font-size: 10px;
+    font-weight: bold;
+    letter-spacing: 1px;
+    color: var(--neon-cyan);
+    text-shadow: 0 0 8px rgba(0, 212, 255, 0.5);
+}
+
+.knob-input {
+    width: 100%;
+    height: 8px;
+    background: linear-gradient(to right,
+        rgba(239, 68, 68, 0.3),
+        rgba(139, 148, 158, 0.3) 50%,
+        rgba(16, 185, 129, 0.3));
+    border-radius: 4px;
+    outline: none;
+    cursor: pointer;
+    border: 1px solid rgba(88, 166, 255, 0.3);
+    box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.5);
+}
+
+.knob-input::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    background: radial-gradient(circle, var(--accent-primary), var(--neon-purple));
+    border-radius: 50%;
+    cursor: grab;
+    box-shadow: 0 0 12px rgba(88, 166, 255, 0.8),
+                0 0 20px rgba(168, 85, 247, 0.4);
+    border: 2px solid rgba(255, 255, 255, 0.4);
+    transition: all 0.2s;
+}
+
+.knob-input::-webkit-slider-thumb:hover {
+    transform: scale(1.15);
+    box-shadow: 0 0 16px rgba(88, 166, 255, 1),
+                0 0 30px rgba(168, 85, 247, 0.6);
+}
+
+.knob-input::-webkit-slider-thumb:active {
+    cursor: grabbing;
+    transform: scale(1.05);
+}
+
+.knob-input::-moz-range-thumb {
+    width: 20px;
+    height: 20px;
+    background: radial-gradient(circle, var(--accent-primary), var(--neon-purple));
+    border-radius: 50%;
+    cursor: grab;
+    box-shadow: 0 0 12px rgba(88, 166, 255, 0.8),
+                0 0 20px rgba(168, 85, 247, 0.4);
+    border: 2px solid rgba(255, 255, 255, 0.4);
+    transition: all 0.2s;
+}
+
+.knob-value {
+    font-size: 12px;
+    font-weight: bold;
+    font-family: 'Courier New', monospace;
+    color: var(--accent-primary);
+    text-shadow: 0 0 10px rgba(88, 166, 255, 0.6);
+    min-width: 60px;
+    text-align: center;
+}
+
+.mixer-reset {
+    background: linear-gradient(135deg, rgba(88, 166, 255, 0.2), rgba(168, 85, 247, 0.2));
+    border: 1px solid var(--accent-primary);
+    color: var(--accent-primary);
+    padding: 10px;
+    border-radius: 6px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.mixer-reset:hover {
+    background: linear-gradient(135deg, var(--accent-primary), var(--neon-purple));
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(88, 166, 255, 0.5);
+}
+
+/* View Toggle Button */
+.view-toggle {
+    position: relative;
+}
+
+.view-toggle.active {
+    background: linear-gradient(135deg, var(--accent-primary), var(--neon-purple));
+}
+
+/* Multi-Deck View */
+.deck-view {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    background: var(--bg-primary);
+}
+
+.deck-selector {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    padding: 16px;
+    background: var(--bg-secondary);
+    border-bottom: 1px solid var(--border-primary);
+}
+
+.deck-select-btn {
+    padding: 10px 24px;
+    background: var(--bg-tertiary);
+    border: 2px solid rgba(88, 166, 255, 0.3);
+    border-radius: 8px;
+    color: var(--text-primary);
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.deck-select-btn:hover {
+    border-color: var(--accent-primary);
+    background: rgba(88, 166, 255, 0.1);
+}
+
+.deck-select-btn.active {
+    background: linear-gradient(135deg, var(--accent-primary), var(--neon-purple));
+    border-color: var(--accent-primary);
+    color: white;
+    box-shadow: 0 4px 12px rgba(88, 166, 255, 0.5);
+}
+
+.decks-container {
+    flex: 1;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    padding: 16px;
+    overflow: auto;
+}
+
+.decks-container.four-deck {
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+}
+
+.deck {
+    display: flex;
+    flex-direction: column;
+    background: var(--bg-secondary);
+    border: 2px solid rgba(88, 166, 255, 0.3);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
+}
+
+.deck-hidden {
+    display: none;
+}
+
+.deck-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 16px;
+    background: linear-gradient(135deg, rgba(88, 166, 255, 0.1), rgba(168, 85, 247, 0.1));
+    border-bottom: 1px solid rgba(88, 166, 255, 0.3);
+}
+
+.deck-header h3 {
+    margin: 0;
+    font-size: 16px;
+    color: var(--accent-primary);
+    text-shadow: 0 0 10px rgba(88, 166, 255, 0.5);
+}
+
+.deck-load-btn {
+    padding: 6px 16px;
+    background: var(--bg-tertiary);
+    border: 1px solid var(--accent-primary);
+    border-radius: 6px;
+    color: var(--accent-primary);
+    font-size: 12px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.deck-load-btn:hover {
+    background: var(--accent-primary);
+    color: white;
+    box-shadow: 0 0 12px rgba(88, 166, 255, 0.6);
+}
+
+.deck-display {
+    flex: 1;
+    position: relative;
+    background: var(--bg-primary);
+    min-height: 200px;
+}
+
+.deck-player {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: none;
+}
+
+.deck-player.active {
+    display: block;
+}
+
+.deck-waveform {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+.deck-info {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: var(--text-secondary);
+    font-size: 14px;
+    text-align: center;
+    pointer-events: none;
+}
+
+.deck-controls {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    background: var(--bg-tertiary);
+    border-top: 1px solid rgba(88, 166, 255, 0.2);
+}
+
+.deck-btn-play {
+    width: 40px;
+    height: 40px;
+    background: linear-gradient(135deg, var(--accent-primary), var(--neon-purple));
+    border: none;
+    border-radius: 50%;
+    color: white;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s;
+    flex-shrink: 0;
+}
+
+.deck-btn-play:hover {
+    transform: scale(1.1);
+    box-shadow: 0 0 20px rgba(88, 166, 255, 0.8);
+}
+
+.deck-progress {
+    flex: 1;
+    height: 6px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 3px;
+    overflow: hidden;
+    position: relative;
+}
+
+.deck-progress-bar {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, var(--accent-primary), var(--neon-purple));
+    transition: width 0.1s;
+}
+
+.deck-time {
+    font-size: 12px;
+    font-family: 'Courier New', monospace;
+    color: var(--text-secondary);
+    min-width: 100px;
+    text-align: right;
+}
+
 /* Effects Rack */
 .effect-control {
     background: rgba(0, 0, 0, 0.2);
