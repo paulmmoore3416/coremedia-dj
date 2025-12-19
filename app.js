@@ -90,11 +90,12 @@ class CoreMedia {
         this.isDeckView = false;
         this.deckCount = 2;
         this.decks = {
-            A: { player: null, src: null, isPlaying: false, title: '' },
-            B: { player: null, src: null, isPlaying: false, title: '' },
-            C: { player: null, src: null, isPlaying: false, title: '' },
-            D: { player: null, src: null, isPlaying: false, title: '' }
+            A: { player: null, src: null, isPlaying: false, title: '', audioContext: null, source: null, gainNode: null, eqNodes: {} },
+            B: { player: null, src: null, isPlaying: false, title: '', audioContext: null, source: null, gainNode: null, eqNodes: {} },
+            C: { player: null, src: null, isPlaying: false, title: '', audioContext: null, source: null, gainNode: null, eqNodes: {} },
+            D: { player: null, src: null, isPlaying: false, title: '', audioContext: null, source: null, gainNode: null, eqNodes: {} }
         };
+        this.crossfaderValue = 50; // Center position
 
         // Effects
         this.reverbNode = null;
@@ -399,13 +400,27 @@ class CoreMedia {
                 this.eqFilters.push(filter);
             });
 
-            // Connect filters in series
+            // Build complete audio chain: analyser → mixing board → EQ → destination
             let source = this.analyser;
+
+            // Connect mixing board if it exists
+            if (this.mixerNodes.gainNode) {
+                source.connect(this.mixerNodes.gainNode);
+                this.mixerNodes.gainNode.connect(this.mixerNodes.bassFilter);
+                this.mixerNodes.bassFilter.connect(this.mixerNodes.midFilter);
+                this.mixerNodes.midFilter.connect(this.mixerNodes.trebleFilter);
+                this.mixerNodes.trebleFilter.connect(this.mixerNodes.colorFilter);
+                this.mixerNodes.colorFilter.connect(this.mixerNodes.presenceFilter);
+                source = this.mixerNodes.presenceFilter;
+            }
+
+            // Connect EQ filters in series
             this.eqFilters.forEach(filter => {
                 source.connect(filter);
                 source = filter;
             });
 
+            // Final connection to destination
             source.connect(this.audioContext.destination);
 
             this.drawVisualizer();
@@ -2823,12 +2838,251 @@ class CoreMedia {
             });
         });
 
-        // Initialize deck players
+        // Initialize deck players and audio nodes
         ['A', 'B', 'C', 'D'].forEach(deck => {
             const player = document.getElementById(`deckPlayer${deck}`);
             if (player) {
                 this.decks[deck].player = player;
                 player.addEventListener('timeupdate', () => this.updateDeckProgress(deck));
+
+                // Setup deck audio context when track loads
+                player.addEventListener('loadedmetadata', () => {
+                    this.setupDeckAudio(deck);
+                });
+            }
+
+            // Setup drag and drop for each deck
+            this.setupDeckDragDrop(deck);
+
+            // Setup per-deck EQ controls
+            this.setupDeckEQ(deck);
+
+            // Setup per-deck volume fader
+            this.setupDeckVolume(deck);
+        });
+
+        // Setup crossfader
+        this.setupCrossfader();
+
+        // Setup playlist item dragging
+        this.setupPlaylistDragging();
+    }
+
+    setupDeckDragDrop(deckId) {
+        const deckElement = document.getElementById(`deck${deckId}`);
+        if (!deckElement) return;
+
+        deckElement.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            deckElement.classList.add('drag-over');
+        });
+
+        deckElement.addEventListener('dragleave', () => {
+            deckElement.classList.remove('drag-over');
+        });
+
+        deckElement.addEventListener('drop', (e) => {
+            e.preventDefault();
+            deckElement.classList.remove('drag-over');
+
+            const trackIndex = parseInt(e.dataTransfer.getData('trackIndex'));
+            if (!isNaN(trackIndex) && trackIndex >= 0 && trackIndex < this.playlist.length) {
+                this.loadTrackToDeck(deckId, trackIndex);
+            }
+        });
+    }
+
+    setupPlaylistDragging() {
+        // Make playlist items draggable
+        const updateDraggable = () => {
+            const playlistItems = document.querySelectorAll('.playlist-item');
+            playlistItems.forEach((item, index) => {
+                item.setAttribute('draggable', 'true');
+                item.addEventListener('dragstart', (e) => {
+                    e.dataTransfer.setData('trackIndex', index.toString());
+                    e.dataTransfer.effectAllowed = 'copy';
+                    item.style.opacity = '0.5';
+                });
+                item.addEventListener('dragend', (e) => {
+                    item.style.opacity = '1';
+                });
+            });
+        };
+
+        // Update when playlist changes
+        const observer = new MutationObserver(updateDraggable);
+        const playlistEl = document.getElementById('playlist');
+        if (playlistEl) {
+            observer.observe(playlistEl, { childList: true });
+            updateDraggable();
+        }
+    }
+
+    loadTrackToDeck(deckId, trackIndex) {
+        if (trackIndex < 0 || trackIndex >= this.playlist.length) return;
+
+        const track = this.playlist[trackIndex];
+        this.decks[deckId].src = track.url;
+        this.decks[deckId].title = track.name;
+        this.decks[deckId].player.src = track.url;
+
+        const infoEl = document.getElementById(`deckInfo${deckId}`);
+        if (infoEl) {
+            infoEl.textContent = track.name;
+        }
+
+        // Draw waveform for deck
+        this.drawDeckWaveform(deckId);
+    }
+
+    setupDeckAudio(deckId) {
+        const deck = this.decks[deckId];
+        if (!deck.player || deck.source) return; // Already set up
+
+        try {
+            // Create audio context for deck if not exists
+            if (!deck.audioContext) {
+                deck.audioContext = this.audioContext || new (window.AudioContext || window.webkitAudioContext)();
+            }
+
+            // Create audio source
+            deck.source = deck.audioContext.createMediaElementSource(deck.player);
+
+            // Create gain node for volume
+            deck.gainNode = deck.audioContext.createGain();
+            deck.gainNode.gain.value = 0.85; // Default 85%
+
+            // Create EQ nodes (3-band: High, Mid, Low)
+            deck.eqNodes.high = deck.audioContext.createBiquadFilter();
+            deck.eqNodes.high.type = 'highshelf';
+            deck.eqNodes.high.frequency.value = 8000;
+            deck.eqNodes.high.gain.value = 0;
+
+            deck.eqNodes.mid = deck.audioContext.createBiquadFilter();
+            deck.eqNodes.mid.type = 'peaking';
+            deck.eqNodes.mid.frequency.value = 1000;
+            deck.eqNodes.mid.Q.value = 1.0;
+            deck.eqNodes.mid.gain.value = 0;
+
+            deck.eqNodes.low = deck.audioContext.createBiquadFilter();
+            deck.eqNodes.low.type = 'lowshelf';
+            deck.eqNodes.low.frequency.value = 100;
+            deck.eqNodes.low.gain.value = 0;
+
+            // Connect audio chain: source → EQ (low → mid → high) → gain → destination
+            deck.source.connect(deck.eqNodes.low);
+            deck.eqNodes.low.connect(deck.eqNodes.mid);
+            deck.eqNodes.mid.connect(deck.eqNodes.high);
+            deck.eqNodes.high.connect(deck.gainNode);
+            deck.gainNode.connect(deck.audioContext.destination);
+
+        } catch (error) {
+            console.warn(`Could not setup audio for deck ${deckId}:`, error);
+        }
+    }
+
+    setupDeckEQ(deckId) {
+        const highKnob = document.getElementById(`deckEQHigh${deckId}`);
+        const midKnob = document.getElementById(`deckEQMid${deckId}`);
+        const lowKnob = document.getElementById(`deckEQLow${deckId}`);
+
+        if (highKnob) {
+            highKnob.addEventListener('input', (e) => {
+                const value = parseFloat(e.target.value);
+                const deck = this.decks[deckId];
+                if (deck.eqNodes.high) {
+                    deck.eqNodes.high.gain.value = value;
+                }
+                const valueSpan = highKnob.nextElementSibling;
+                if (valueSpan && valueSpan.classList.contains('eq-value')) {
+                    valueSpan.textContent = (value >= 0 ? '+' : '') + value.toFixed(1) + 'dB';
+                }
+            });
+        }
+
+        if (midKnob) {
+            midKnob.addEventListener('input', (e) => {
+                const value = parseFloat(e.target.value);
+                const deck = this.decks[deckId];
+                if (deck.eqNodes.mid) {
+                    deck.eqNodes.mid.gain.value = value;
+                }
+                const valueSpan = midKnob.nextElementSibling;
+                if (valueSpan && valueSpan.classList.contains('eq-value')) {
+                    valueSpan.textContent = (value >= 0 ? '+' : '') + value.toFixed(1) + 'dB';
+                }
+            });
+        }
+
+        if (lowKnob) {
+            lowKnob.addEventListener('input', (e) => {
+                const value = parseFloat(e.target.value);
+                const deck = this.decks[deckId];
+                if (deck.eqNodes.low) {
+                    deck.eqNodes.low.gain.value = value;
+                }
+                const valueSpan = lowKnob.nextElementSibling;
+                if (valueSpan && valueSpan.classList.contains('eq-value')) {
+                    valueSpan.textContent = (value >= 0 ? '+' : '') + value.toFixed(1) + 'dB';
+                }
+            });
+        }
+    }
+
+    setupDeckVolume(deckId) {
+        const volumeFader = document.getElementById(`deckVolume${deckId}`);
+        if (!volumeFader) return;
+
+        volumeFader.addEventListener('input', (e) => {
+            const value = parseInt(e.target.value);
+            const deck = this.decks[deckId];
+
+            if (deck.gainNode) {
+                deck.gainNode.gain.value = value / 100;
+            }
+
+            const valueSpan = volumeFader.parentElement.querySelector('.volume-value');
+            if (valueSpan) {
+                valueSpan.textContent = value + '%';
+            }
+        });
+    }
+
+    setupCrossfader() {
+        const crossfader = document.getElementById('crossfader');
+        if (!crossfader) return;
+
+        crossfader.addEventListener('input', (e) => {
+            const value = parseInt(e.target.value);
+            this.crossfaderValue = value;
+            this.applyCrossfader();
+        });
+    }
+
+    applyCrossfader() {
+        // Crossfader affects decks A and B (or A/C and B/D in 4-deck mode)
+        const leftDecks = this.deckCount === 4 ? ['A', 'C'] : ['A'];
+        const rightDecks = this.deckCount === 4 ? ['B', 'D'] : ['B'];
+
+        // Calculate volumes based on crossfader position (0-100, center=50)
+        const leftVolume = this.crossfaderValue <= 50 ? 1.0 : (100 - this.crossfaderValue) / 50;
+        const rightVolume = this.crossfaderValue >= 50 ? 1.0 : this.crossfaderValue / 50;
+
+        // Apply to left decks
+        leftDecks.forEach(deckId => {
+            const deck = this.decks[deckId];
+            if (deck.gainNode) {
+                const currentVolume = parseInt(document.getElementById(`deckVolume${deckId}`)?.value || 85) / 100;
+                deck.gainNode.gain.value = currentVolume * leftVolume;
+            }
+        });
+
+        // Apply to right decks
+        rightDecks.forEach(deckId => {
+            const deck = this.decks[deckId];
+            if (deck.gainNode) {
+                const currentVolume = parseInt(document.getElementById(`deckVolume${deckId}`)?.value || 85) / 100;
+                deck.gainNode.gain.value = currentVolume * rightVolume;
             }
         });
     }
@@ -3075,28 +3329,8 @@ class CoreMedia {
     }
 
     connectMixingBoard() {
-        // This will be called when audio source is set up
-        // Insert mixing board before EQ chain
-        if (this.audioSource && this.mixerNodes.gainNode) {
-            try {
-                // Chain: source → gain → bass → mid → treble → color → presence → (existing chain)
-                this.audioSource.connect(this.mixerNodes.gainNode);
-                this.mixerNodes.gainNode.connect(this.mixerNodes.bassFilter);
-                this.mixerNodes.bassFilter.connect(this.mixerNodes.midFilter);
-                this.mixerNodes.midFilter.connect(this.mixerNodes.trebleFilter);
-                this.mixerNodes.trebleFilter.connect(this.mixerNodes.colorFilter);
-                this.mixerNodes.colorFilter.connect(this.mixerNodes.presenceFilter);
-
-                // Connect to EQ or destination
-                if (this.eqFilters.length > 0) {
-                    this.mixerNodes.presenceFilter.connect(this.eqFilters[0]);
-                } else {
-                    this.mixerNodes.presenceFilter.connect(this.audioContext.destination);
-                }
-            } catch (e) {
-                console.warn('Mixing board connection issue:', e);
-            }
-        }
+        // Mixing board is now connected inline in setupAudioSource()
+        // This function is kept for compatibility but does nothing
     }
 
     resetMixingBoard() {

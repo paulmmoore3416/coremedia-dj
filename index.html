@@ -618,9 +618,23 @@
                     <button class="deck-select-btn active" data-decks="2">2 Decks</button>
                     <button class="deck-select-btn" data-decks="4">4 Decks</button>
                 </div>
+
+                <!-- DJ Mixer Controls -->
+                <div class="dj-mixer">
+                    <div class="crossfader-section">
+                        <label>CROSSFADER</label>
+                        <input type="range" id="crossfader" class="crossfader" min="0" max="100" value="50">
+                        <div class="crossfader-labels">
+                            <span>A</span>
+                            <span>CENTER</span>
+                            <span>B</span>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="decks-container" id="decksContainer">
                     <!-- Deck A -->
-                    <div class="deck" id="deckA">
+                    <div class="deck deck-drop-zone" id="deckA" data-deck="A">
                         <div class="deck-header">
                             <h3>DECK A</h3>
                             <button class="deck-load-btn" onclick="player.loadToDeck('A')">Load Track</button>
@@ -628,7 +642,7 @@
                         <div class="deck-display">
                             <video class="deck-player" id="deckPlayerA"></video>
                             <canvas class="deck-waveform" id="deckWaveformA"></canvas>
-                            <div class="deck-info" id="deckInfoA">No track loaded</div>
+                            <div class="deck-info" id="deckInfoA">Drag & Drop Track Here</div>
                         </div>
                         <div class="deck-controls">
                             <button class="deck-btn-play" onclick="player.toggleDeckPlay('A')">
@@ -641,10 +655,34 @@
                             </div>
                             <div class="deck-time" id="deckTimeA">0:00 / 0:00</div>
                         </div>
+                        <div class="deck-mixer-controls">
+                            <div class="deck-eq">
+                                <div class="deck-eq-knob">
+                                    <label>HI</label>
+                                    <input type="range" id="deckEQHighA" class="eq-knob" min="-12" max="12" value="0" orient="vertical">
+                                    <span class="eq-value">0dB</span>
+                                </div>
+                                <div class="deck-eq-knob">
+                                    <label>MID</label>
+                                    <input type="range" id="deckEQMidA" class="eq-knob" min="-12" max="12" value="0" orient="vertical">
+                                    <span class="eq-value">0dB</span>
+                                </div>
+                                <div class="deck-eq-knob">
+                                    <label>LOW</label>
+                                    <input type="range" id="deckEQLowA" class="eq-knob" min="-12" max="12" value="0" orient="vertical">
+                                    <span class="eq-value">0dB</span>
+                                </div>
+                            </div>
+                            <div class="deck-volume-fader">
+                                <input type="range" id="deckVolumeA" class="volume-fader" min="0" max="100" value="85" orient="vertical">
+                                <label>VOLUME</label>
+                                <span class="volume-value">85%</span>
+                            </div>
+                        </div>
                     </div>
 
                     <!-- Deck B -->
-                    <div class="deck" id="deckB">
+                    <div class="deck deck-drop-zone" id="deckB" data-deck="B">
                         <div class="deck-header">
                             <h3>DECK B</h3>
                             <button class="deck-load-btn" onclick="player.loadToDeck('B')">Load Track</button>
@@ -652,7 +690,7 @@
                         <div class="deck-display">
                             <video class="deck-player" id="deckPlayerB"></video>
                             <canvas class="deck-waveform" id="deckWaveformB"></canvas>
-                            <div class="deck-info" id="deckInfoB">No track loaded</div>
+                            <div class="deck-info" id="deckInfoB">Drag & Drop Track Here</div>
                         </div>
                         <div class="deck-controls">
                             <button class="deck-btn-play" onclick="player.toggleDeckPlay('B')">
@@ -665,10 +703,34 @@
                             </div>
                             <div class="deck-time" id="deckTimeB">0:00 / 0:00</div>
                         </div>
+                        <div class="deck-mixer-controls">
+                            <div class="deck-eq">
+                                <div class="deck-eq-knob">
+                                    <label>HI</label>
+                                    <input type="range" id="deckEQHighB" class="eq-knob" min="-12" max="12" value="0" orient="vertical">
+                                    <span class="eq-value">0dB</span>
+                                </div>
+                                <div class="deck-eq-knob">
+                                    <label>MID</label>
+                                    <input type="range" id="deckEQMidB" class="eq-knob" min="-12" max="12" value="0" orient="vertical">
+                                    <span class="eq-value">0dB</span>
+                                </div>
+                                <div class="deck-eq-knob">
+                                    <label>LOW</label>
+                                    <input type="range" id="deckEQLowB" class="eq-knob" min="-12" max="12" value="0" orient="vertical">
+                                    <span class="eq-value">0dB</span>
+                                </div>
+                            </div>
+                            <div class="deck-volume-fader">
+                                <input type="range" id="deckVolumeB" class="volume-fader" min="0" max="100" value="85" orient="vertical">
+                                <label>VOLUME</label>
+                                <span class="volume-value">85%</span>
+                            </div>
+                        </div>
                     </div>
 
                     <!-- Deck C (4-deck mode only) -->
-                    <div class="deck deck-hidden" id="deckC">
+                    <div class="deck deck-hidden deck-drop-zone" id="deckC" data-deck="C">
                         <div class="deck-header">
                             <h3>DECK C</h3>
                             <button class="deck-load-btn" onclick="player.loadToDeck('C')">Load Track</button>
@@ -676,7 +738,7 @@
                         <div class="deck-display">
                             <video class="deck-player" id="deckPlayerC"></video>
                             <canvas class="deck-waveform" id="deckWaveformC"></canvas>
-                            <div class="deck-info" id="deckInfoC">No track loaded</div>
+                            <div class="deck-info" id="deckInfoC">Drag & Drop Track Here</div>
                         </div>
                         <div class="deck-controls">
                             <button class="deck-btn-play" onclick="player.toggleDeckPlay('C')">
@@ -689,10 +751,34 @@
                             </div>
                             <div class="deck-time" id="deckTimeC">0:00 / 0:00</div>
                         </div>
+                        <div class="deck-mixer-controls">
+                            <div class="deck-eq">
+                                <div class="deck-eq-knob">
+                                    <label>HI</label>
+                                    <input type="range" id="deckEQHighC" class="eq-knob" min="-12" max="12" value="0" orient="vertical">
+                                    <span class="eq-value">0dB</span>
+                                </div>
+                                <div class="deck-eq-knob">
+                                    <label>MID</label>
+                                    <input type="range" id="deckEQMidC" class="eq-knob" min="-12" max="12" value="0" orient="vertical">
+                                    <span class="eq-value">0dB</span>
+                                </div>
+                                <div class="deck-eq-knob">
+                                    <label>LOW</label>
+                                    <input type="range" id="deckEQLowC" class="eq-knob" min="-12" max="12" value="0" orient="vertical">
+                                    <span class="eq-value">0dB</span>
+                                </div>
+                            </div>
+                            <div class="deck-volume-fader">
+                                <input type="range" id="deckVolumeC" class="volume-fader" min="0" max="100" value="85" orient="vertical">
+                                <label>VOLUME</label>
+                                <span class="volume-value">85%</span>
+                            </div>
+                        </div>
                     </div>
 
                     <!-- Deck D (4-deck mode only) -->
-                    <div class="deck deck-hidden" id="deckD">
+                    <div class="deck deck-hidden deck-drop-zone" id="deckD" data-deck="D">
                         <div class="deck-header">
                             <h3>DECK D</h3>
                             <button class="deck-load-btn" onclick="player.loadToDeck('D')">Load Track</button>
@@ -700,7 +786,7 @@
                         <div class="deck-display">
                             <video class="deck-player" id="deckPlayerD"></video>
                             <canvas class="deck-waveform" id="deckWaveformD"></canvas>
-                            <div class="deck-info" id="deckInfoD">No track loaded</div>
+                            <div class="deck-info" id="deckInfoD">Drag & Drop Track Here</div>
                         </div>
                         <div class="deck-controls">
                             <button class="deck-btn-play" onclick="player.toggleDeckPlay('D')">
@@ -712,6 +798,30 @@
                                 <div class="deck-progress-bar" id="deckProgressD"></div>
                             </div>
                             <div class="deck-time" id="deckTimeD">0:00 / 0:00</div>
+                        </div>
+                        <div class="deck-mixer-controls">
+                            <div class="deck-eq">
+                                <div class="deck-eq-knob">
+                                    <label>HI</label>
+                                    <input type="range" id="deckEQHighD" class="eq-knob" min="-12" max="12" value="0" orient="vertical">
+                                    <span class="eq-value">0dB</span>
+                                </div>
+                                <div class="deck-eq-knob">
+                                    <label>MID</label>
+                                    <input type="range" id="deckEQMidD" class="eq-knob" min="-12" max="12" value="0" orient="vertical">
+                                    <span class="eq-value">0dB</span>
+                                </div>
+                                <div class="deck-eq-knob">
+                                    <label>LOW</label>
+                                    <input type="range" id="deckEQLowD" class="eq-knob" min="-12" max="12" value="0" orient="vertical">
+                                    <span class="eq-value">0dB</span>
+                                </div>
+                            </div>
+                            <div class="deck-volume-fader">
+                                <input type="range" id="deckVolumeD" class="volume-fader" min="0" max="100" value="85" orient="vertical">
+                                <label>VOLUME</label>
+                                <span class="volume-value">85%</span>
+                            </div>
                         </div>
                     </div>
                 </div>
