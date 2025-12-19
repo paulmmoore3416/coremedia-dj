@@ -1,6 +1,10 @@
-# CoreMedia - Professional DJ Media Player
+# CoreMedia - Professional DJ & Media Player
 
-A feature-rich, professional media player with advanced DJ controls built with modern web technologies. CoreMedia supports all major video and audio formats with an elegant GitHub-themed interface and professional DJing capabilities.
+![CoreMedia](https://img.shields.io/badge/CoreMedia-v2.0-00d4ff?style=for-the-badge)
+![License](https://img.shields.io/badge/License-MIT-a855f7?style=for-the-badge)
+![Status](https://img.shields.io/badge/Status-Active-4ade80?style=for-the-badge)
+
+A professional-grade DJ application and media player built with modern web technologies. Transform your browser into a complete DJ workstation with multi-deck mixing, effects, and advanced audio processing.
 
 ## Features
 
@@ -19,25 +23,51 @@ A feature-rich, professional media player with advanced DJ controls built with m
 - Fullscreen support
 - Progress bar with seek functionality
 
-### Advanced Features
+### 🎛️ Professional DJ Decks (NEW!)
+- **Multi-Deck Setup**: Up to 4 independent decks (A, B, C, D)
+- **Drag & Drop Loading**: Drag tracks from playlist directly to any deck
+- **Professional Crossfader**: Smooth A/B transitions with gradient slider
+- **Per-Deck 3-Band EQ**: High/Mid/Low control (-12dB to +12dB each)
+- **Per-Deck Volume Faders**: Independent volume control (0-100%)
+- **Independent Audio Chains**: Isolated audio processing per deck
 
-- **Playlist Management**: Add multiple files, shuffle, clear all
-- **10-Band Equalizer**: Fine-tune audio output (60Hz - 16kHz) with professional DJ-style controls
-- **Audio Visualizer**: Three visualization modes (Bars, Waveform, Circular)
-- **Subtitle Support**: Load and display external subtitle files
-- **Keyboard Shortcuts**: Full keyboard control
-- **Settings**: Customizable preferences with local storage
-- **Drag & Drop**: Easy file loading
+### 🎚️ Mixing Board (6 Professional Controls)
+- **Master Gain**: -12dB to +12dB overall volume control
+- **Bass**: Low-shelf filter at 100Hz
+- **Mid**: Peaking filter at 1kHz
+- **Treble**: High-shelf filter at 8kHz
+- **Color**: Variable tone control (500Hz-20kHz)
+- **Presence**: Air and sparkle boost at 5kHz
 
-### DJ Controls
+### 🎨 Advanced Visualizations
+- **9 Visualizer Styles**: Bars, Waveform, Circular, Particles, Spiral, Mirror, Radial, Oscilloscope, Grid Matrix
+- **Spectral Analyzer**: Real-time frequency analysis (Spectrogram & Waterfall modes)
+- **Draggable Analyzer**: Move spectral analyzer anywhere on screen
+- **FFT Controls**: Adjustable FFT size, smoothing, and peak hold
+- **Beat Grid**: AI-powered beat detection with visual overlay
 
-- **Pitch Control**: ±16% pitch adjustment with precise control
-- **Hot Cue Points**: 8 programmable cue points with color coding
-- **BPM Detection**: Tap tempo and automatic BPM detection
-- **Looping**: Manual loop in/out points and auto-loops (2, 4, 8 beats)
-- **Crossfader**: Smooth transition control between decks
-- **Beat Sync**: Adjust tempo and BPM in real-time
-- **Keyboard DJ Controls**: Number keys 1-8 for cue points, +/- for pitch bend
+### 🎵 DJ & Production Features
+- **10-Band Equalizer**: Precision frequency control (60Hz - 16kHz)
+- **Loop Slicer**: Chop loops into 4/8/16 slices with trigger pads
+- **Recording & Export**: Capture mixes in high-quality WebM/WAV
+- **Hot Cues**: 8 assignable cue points per track
+- **Pitch Control**: -50% to +50% speed adjustment
+- **BPM Detection**: Tap tempo and automatic BPM analysis
+- **Advanced Looping**: Manual loop points and auto-loops (2, 4, 8 beats)
+
+### 🎯 Professional Effects
+- Reverb, Delay, Filter, Phaser, Flanger, Distortion, BitCrusher
+- Real-time effect processing with Web Audio API
+- Wet/dry mix controls
+- Effect presets and custom settings
+
+### ⚡ Performance Optimizations
+- Throttled visualizer updates (~60fps)
+- Audio buffer caching (LRU, 10-buffer limit)
+- Offscreen canvas rendering
+- Debounced waveform generation
+- Lazy loading with requestIdleCallback
+- Aggressive memory cleanup (every 30s)
 
 ### Professional UI
 
