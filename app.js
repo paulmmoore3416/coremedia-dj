@@ -493,6 +493,148 @@ class CoreMedia {
                 ctx.strokeStyle = '#58a6ff';
                 ctx.lineWidth = 2;
                 ctx.stroke();
+            } else if (this.settings.visualizerStyle === 'particles') {
+                // Particle explosion visualizer
+                const particleCount = 100;
+                const centerX = width / 2;
+                const centerY = height / 2;
+
+                for (let i = 0; i < Math.min(bufferLength, particleCount); i++) {
+                    const amplitude = dataArray[i] / 255;
+                    const angle = (i / particleCount) * Math.PI * 2;
+                    const distance = amplitude * Math.min(width, height) / 2;
+                    const x = centerX + Math.cos(angle) * distance;
+                    const y = centerY + Math.sin(angle) * distance;
+                    const size = 2 + amplitude * 6;
+
+                    const gradient = ctx.createRadialGradient(x, y, 0, x, y, size);
+                    gradient.addColorStop(0, `rgba(88, 166, 255, ${amplitude})`);
+                    gradient.addColorStop(1, 'rgba(88, 166, 255, 0)');
+
+                    ctx.fillStyle = gradient;
+                    ctx.beginPath();
+                    ctx.arc(x, y, size, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+            } else if (this.settings.visualizerStyle === 'spiral') {
+                // Spiral/Helix visualizer
+                const centerX = width / 2;
+                const centerY = height / 2;
+                const maxRadius = Math.min(width, height) / 2.5;
+
+                ctx.beginPath();
+                for (let i = 0; i < bufferLength; i++) {
+                    const amplitude = dataArray[i] / 255;
+                    const angle = (i / bufferLength) * Math.PI * 8; // Multiple rotations
+                    const radius = (i / bufferLength) * maxRadius;
+                    const x = centerX + Math.cos(angle) * (radius + amplitude * 30);
+                    const y = centerY + Math.sin(angle) * (radius + amplitude * 30);
+
+                    if (i === 0) {
+                        ctx.moveTo(x, y);
+                    } else {
+                        ctx.lineTo(x, y);
+                    }
+                }
+                ctx.strokeStyle = '#58a6ff';
+                ctx.lineWidth = 3;
+                ctx.shadowColor = '#58a6ff';
+                ctx.shadowBlur = 10;
+                ctx.stroke();
+                ctx.shadowBlur = 0;
+            } else if (this.settings.visualizerStyle === 'mirror') {
+                // Mirror/Symmetrical bars
+                const barWidth = (width / bufferLength) * 2;
+                const centerY = height / 2;
+
+                for (let i = 0; i < bufferLength; i++) {
+                    const barHeight = (dataArray[i] / 255) * height / 2;
+                    const x = (i / bufferLength) * width;
+
+                    const gradient = ctx.createLinearGradient(0, centerY - barHeight, 0, centerY + barHeight);
+                    gradient.addColorStop(0, '#a855f7');
+                    gradient.addColorStop(0.5, '#58a6ff');
+                    gradient.addColorStop(1, '#a855f7');
+
+                    ctx.fillStyle = gradient;
+                    // Top half
+                    ctx.fillRect(x, centerY - barHeight, barWidth, barHeight);
+                    // Bottom half (mirror)
+                    ctx.fillRect(x, centerY, barWidth, barHeight);
+                }
+            } else if (this.settings.visualizerStyle === 'radial') {
+                // Radial bars emanating from center
+                const centerX = width / 2;
+                const centerY = height / 2;
+                const maxRadius = Math.min(width, height) / 2;
+
+                for (let i = 0; i < bufferLength; i++) {
+                    const angle = (i / bufferLength) * Math.PI * 2;
+                    const barLength = (dataArray[i] / 255) * maxRadius;
+                    const barWidth = (Math.PI * 2 / bufferLength) * maxRadius;
+
+                    ctx.save();
+                    ctx.translate(centerX, centerY);
+                    ctx.rotate(angle);
+
+                    const gradient = ctx.createLinearGradient(0, 0, barLength, 0);
+                    gradient.addColorStop(0, '#1f6feb');
+                    gradient.addColorStop(1, '#58a6ff');
+
+                    ctx.fillStyle = gradient;
+                    ctx.fillRect(0, -barWidth/2, barLength, barWidth);
+                    ctx.restore();
+                }
+            } else if (this.settings.visualizerStyle === 'waveform') {
+                // Oscilloscope-style waveform
+                ctx.lineWidth = 3;
+                ctx.strokeStyle = '#00d4ff';
+                ctx.shadowColor = '#00d4ff';
+                ctx.shadowBlur = 15;
+                ctx.beginPath();
+
+                const sliceWidth = width / bufferLength;
+                let x = 0;
+
+                for (let i = 0; i < bufferLength; i++) {
+                    const v = dataArray[i] / 128.0;
+                    const y = v * height / 2;
+
+                    if (i === 0) {
+                        ctx.moveTo(x, y);
+                    } else {
+                        ctx.lineTo(x, y);
+                    }
+
+                    x += sliceWidth;
+                }
+
+                ctx.lineTo(width, height / 2);
+                ctx.stroke();
+                ctx.shadowBlur = 0;
+            } else if (this.settings.visualizerStyle === 'grid') {
+                // Grid/Matrix style visualizer
+                const cols = 32;
+                const rows = 16;
+                const cellWidth = width / cols;
+                const cellHeight = height / rows;
+                const dataPerCell = Math.floor(bufferLength / (cols * rows));
+
+                for (let row = 0; row < rows; row++) {
+                    for (let col = 0; col < cols; col++) {
+                        const dataIndex = (row * cols + col) * dataPerCell;
+                        const amplitude = dataArray[dataIndex] / 255;
+
+                        const hue = (amplitude * 120) + 180; // Blue to cyan
+                        ctx.fillStyle = `hsla(${hue}, 100%, 50%, ${amplitude})`;
+                        ctx.fillRect(
+                            col * cellWidth + 1,
+                            row * cellHeight + 1,
+                            cellWidth - 2,
+                            cellHeight - 2
+                        );
+                    }
+                }
             }
         };
 
@@ -1873,12 +2015,16 @@ class CoreMedia {
         const spectralToggle = document.getElementById('spectralToggle');
         const spectralModeSelect = document.getElementById('spectralMode');
         const spectralCanvas = document.getElementById('spectralCanvas');
+        const spectralContainer = document.getElementById('spectralContainer');
+        const spectralFFTSize = document.getElementById('spectralFFTSize');
+        const spectralSmoothing = document.getElementById('spectralSmoothing');
+        const spectralPeak = document.getElementById('spectralPeakHold');
 
         if (spectralToggle) {
             spectralToggle.addEventListener('change', (e) => {
                 this.spectralEnabled = e.target.checked;
-                if (spectralCanvas) {
-                    spectralCanvas.style.display = this.spectralEnabled ? 'block' : 'none';
+                if (spectralContainer) {
+                    spectralContainer.style.display = this.spectralEnabled ? 'flex' : 'none';
                 }
                 if (this.spectralEnabled) {
                     this.updateSpectralAnalyzer();
@@ -1893,7 +2039,100 @@ class CoreMedia {
             });
         }
 
+        // FFT Size control
+        if (spectralFFTSize) {
+            spectralFFTSize.addEventListener('change', (e) => {
+                if (this.analyser) {
+                    this.analyser.fftSize = parseInt(e.target.value);
+                }
+            });
+        }
+
+        // Smoothing control
+        if (spectralSmoothing) {
+            spectralSmoothing.addEventListener('input', (e) => {
+                if (this.analyser) {
+                    this.analyser.smoothingTimeConstant = parseFloat(e.target.value);
+                }
+                const valueEl = document.getElementById('spectralSmoothingValue');
+                if (valueEl) {
+                    valueEl.textContent = parseFloat(e.target.value).toFixed(1);
+                }
+            });
+        }
+
+        // Peak hold control
+        if (spectralPeak) {
+            spectralPeak.addEventListener('change', (e) => {
+                this.spectralPeakHold = e.target.checked;
+                if (!this.spectralPeakHold) {
+                    this.spectralPeaks = [];
+                }
+            });
+        }
+
         this.spectralCanvas = spectralCanvas;
+        this.spectralPeaks = [];
+        this.spectralPeakHold = false;
+
+        // Make spectral analyzer draggable
+        if (spectralContainer) {
+            this.makeSpectralDraggable(spectralContainer);
+        }
+    }
+
+    makeSpectralDraggable(element) {
+        let isDragging = false;
+        let currentX;
+        let currentY;
+        let initialX;
+        let initialY;
+        let xOffset = 0;
+        let yOffset = 0;
+
+        // Create drag handle
+        const dragHandle = document.createElement('div');
+        dragHandle.className = 'spectral-drag-handle';
+        dragHandle.innerHTML = '<span>⋮⋮</span> Spectral Analyzer';
+        element.insertBefore(dragHandle, element.firstChild);
+
+        dragHandle.addEventListener('mousedown', dragStart);
+        document.addEventListener('mousemove', drag);
+        document.addEventListener('mouseup', dragEnd);
+
+        function dragStart(e) {
+            initialX = e.clientX - xOffset;
+            initialY = e.clientY - yOffset;
+
+            if (e.target === dragHandle || dragHandle.contains(e.target)) {
+                isDragging = true;
+                element.style.cursor = 'grabbing';
+            }
+        }
+
+        function drag(e) {
+            if (isDragging) {
+                e.preventDefault();
+                currentX = e.clientX - initialX;
+                currentY = e.clientY - initialY;
+
+                xOffset = currentX;
+                yOffset = currentY;
+
+                setTranslate(currentX, currentY, element);
+            }
+        }
+
+        function dragEnd(e) {
+            initialX = currentX;
+            initialY = currentY;
+            isDragging = false;
+            element.style.cursor = 'default';
+        }
+
+        function setTranslate(xPos, yPos, el) {
+            el.style.transform = `translate3d(${xPos}px, ${yPos}px, 0) translateX(-50%)`;
+        }
     }
 
     updateSpectralAnalyzer() {
@@ -2596,16 +2835,16 @@ class CoreMedia {
 
     toggleDeckView() {
         this.isDeckView = !this.isDeckView;
-        const videoArea = document.querySelector('.video-area');
+        const videoContainer = document.querySelector('.video-container');
         const deckView = document.getElementById('deckView');
         const viewToggleBtn = document.getElementById('viewToggleBtn');
 
         if (this.isDeckView) {
-            videoArea.style.display = 'none';
+            videoContainer.style.display = 'none';
             deckView.style.display = 'flex';
             viewToggleBtn.classList.add('active');
         } else {
-            videoArea.style.display = 'flex';
+            videoContainer.style.display = 'block';
             deckView.style.display = 'none';
             viewToggleBtn.classList.remove('active');
         }

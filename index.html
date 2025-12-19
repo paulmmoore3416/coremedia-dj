@@ -249,6 +249,26 @@
                                 <option value="waterfall">Waterfall</option>
                             </select>
                         </div>
+                        <div class="param-control">
+                            <label>FFT Size</label>
+                            <select id="spectralFFTSize" class="filter-type-select">
+                                <option value="512">512</option>
+                                <option value="1024">1024</option>
+                                <option value="2048" selected>2048</option>
+                                <option value="4096">4096</option>
+                                <option value="8192">8192</option>
+                            </select>
+                        </div>
+                        <div class="param-control">
+                            <label>Smoothing: <span id="spectralSmoothingValue">0.8</span></label>
+                            <input type="range" id="spectralSmoothing" min="0" max="1" step="0.1" value="0.8">
+                        </div>
+                        <div class="param-control">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="spectralPeakHold" class="effect-toggle">
+                                Peak Hold
+                            </label>
+                        </div>
                     </div>
                 </div>
 
@@ -745,6 +765,12 @@
                         <option value="bars">Bars</option>
                         <option value="wave">Waveform</option>
                         <option value="circle">Circular</option>
+                        <option value="particles">Particles</option>
+                        <option value="spiral">Spiral</option>
+                        <option value="mirror">Mirror</option>
+                        <option value="radial">Radial</option>
+                        <option value="waveform">Oscilloscope</option>
+                        <option value="grid">Grid Matrix</option>
                     </select>
                 </div>
             </div>
