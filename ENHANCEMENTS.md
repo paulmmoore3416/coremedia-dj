@@ -147,13 +147,17 @@ Transform CoreMedia into a professional DJ setup with multiple independent decks
 ### Deck Features
 
 Each deck includes:
-- **Independent player**: Video or audio
+- **Independent player**: Video or audio with separate audio context
 - **Waveform display**: Visual representation of audio
 - **Play/Pause control**: Individual deck control
 - **Progress bar**: Visual playback progress
 - **Time display**: Current time / total duration
 - **Load button**: Assign tracks from playlist
+- **Drag & Drop Zone**: Drop tracks directly from playlist
 - **Track info**: Displays loaded track name
+- **3-Band EQ**: High/Mid/Low frequency control per deck
+- **Volume Fader**: Independent volume control (0-100%)
+- **Professional Audio Chain**: Isolated audio processing per deck
 
 ### Controls
 
@@ -167,12 +171,63 @@ Each deck includes:
 - **4 Decks**: 2×2 grid (Decks A, B, C & D)
 - **Location**: Top of DJ view
 
+#### Crossfader (NEW!)
+- **Location**: Between deck selector and deck display
+- **Range**: 0-100 (A ← Center → B)
+- **Function**: Smooth transitions between deck pairs
+- **2-Deck Mode**: Controls balance between Deck A and Deck B
+- **4-Deck Mode**: Controls A/C (left) vs B/D (right)
+- **Visual**: Gradient slider with glowing thumb
+- **Use**: Professional DJ-style crossfading
+
 #### Load Track to Deck
-- **Method**: Click "Load Track" button on any deck
-- **Source**: Currently selected track from playlist
-- **Result**: Track loaded to that deck only
+
+**Method 1: Button Click**
+- Click "Load Track" button on any deck
+- Loads currently selected track from playlist
+- Track assigned to that deck only
+
+**Method 2: Drag & Drop (NEW!)**
+- Drag any track from the playlist
+- Drop onto any deck's drop zone
+- Visual feedback with glow effect on hover
+- Instant track loading
+
+#### Per-Deck EQ Controls (NEW!)
+
+Each deck has a 3-band EQ with vertical sliders:
+
+**HIGH (8kHz High-Shelf)**
+- Range: -12dB to +12dB
+- Controls brightness and air
+- Perfect for vocal clarity
+
+**MID (1kHz Peaking)**
+- Range: -12dB to +12dB
+- Controls presence and body
+- Adjust instrument balance
+
+**LOW (100Hz Low-Shelf)**
+- Range: -12dB to +12dB
+- Controls bass and warmth
+- Essential for kick drum control
+
+**Visual Feedback**:
+- Red/green gradient sliders
+- Real-time dB value display
+- Professional vertical fader design
+
+#### Per-Deck Volume Fader (NEW!)
+
+- **Range**: 0% to 100%
+- **Default**: 85%
+- **Design**: Vertical fader with green/red gradient
+- **Real-time**: Volume value display
+- **Integration**: Works with crossfader
+- **Use**: Set individual deck levels before mixing
 
 #### Play/Pause Deck
+
 - **Button**: Circular play button per deck
 - **Glow effect**: Blue/purple gradient with hover animation
 - **Independent**: Each deck plays separately
@@ -187,45 +242,93 @@ Each deck features a waveform display:
 
 ### Use Cases
 
-#### Practice DJ Transitions
-1. Load track to Deck A
-2. Load next track to Deck B
-3. Play Deck A
-4. Cue and prepare Deck B
-5. Practice smooth transitions
+#### Practice DJ Transitions (Enhanced with Crossfader & EQ)
+1. **Drag & drop** track to Deck A from playlist
+2. **Drag & drop** next track to Deck B
+3. Play Deck A at full volume
+4. Adjust **Deck A EQ** for optimal sound
+5. Cue Deck B and adjust its **EQ** to match
+6. Use **crossfader** to smoothly transition from A to B
+7. Fine-tune with **per-deck volume faders**
 
 #### Multi-Track Composition
 1. Use 4-deck mode
-2. Load different elements:
+2. **Drag different stems** to each deck:
    - Deck A: Drums
    - Deck B: Bass
    - Deck C: Melody
    - Deck D: Vocals
-3. Play simultaneously for layered mix
+3. Adjust **each deck's volume** independently
+4. Use **per-deck EQ** to shape each element
+5. Play simultaneously for layered mix
+6. Use **crossfader** to balance groups (A/C vs B/D)
 
 #### A/B Comparison
 1. Load same track to two decks
-2. Apply different effects/EQ to each
-3. Switch between to compare
+2. Apply different **EQ settings** to each
+3. Adjust **volume levels** to match
+4. Use **crossfader** to A/B between settings
+5. Compare sonic differences instantly
+
+#### Live DJ Set
+1. **Drag tracks** from playlist to decks
+2. Set **Deck A volume** to 85%, play track
+3. Prepare **Deck B** with next track
+4. Adjust **Deck B EQ** (cut lows to avoid clash)
+5. Use **crossfader** at center to blend both
+6. **Boost Deck B highs**, cut Deck A gradually
+7. Move **crossfader** fully to Deck B
+8. Repeat with Deck A for next transition
 
 ### Technical Details
 
 #### Independent Audio Context
 - Each deck has its own HTML5 media element
+- Separate Web Audio API audio context per deck
+- Independent audio processing chain
 - Separate playback state tracking
 - Individual time progress updates
+- No interference between decks
+
+#### Audio Chain Per Deck
+```
+Media Element → MediaElementSource → EQ (Low) → EQ (Mid) → EQ (High) → Gain → Destination
+```
+
+- **Source**: MediaElementSource node from player
+- **EQ Filters**: 3 BiquadFilter nodes (low-shelf, peaking, high-shelf)
+- **Gain**: GainNode for volume control and crossfader
+- **Destination**: Audio context destination (speakers)
+
+#### Crossfader Algorithm
+- **Position**: 0-100 (Left to Right)
+- **Center**: 50 (equal mix)
+- **Left Curve**: volume = 1.0 when ≤50, else (100-value)/50
+- **Right Curve**: volume = 1.0 when ≥50, else value/50
+- **Application**: Multiplied with deck volume fader
+- **Real-time**: Instant response, no latency
+
+#### Drag & Drop System
+- **Playlist Items**: Made draggable via MutationObserver
+- **Drop Zones**: Each deck listens for drop events
+- **Data Transfer**: Track index passed via dataTransfer API
+- **Visual Feedback**: CSS class toggle on drag-over
+- **Auto-update**: Observes playlist changes
 
 #### Responsive Layout
 - 2-deck: 50/50 split
 - 4-deck: 25/25/25/25 grid
 - Scales to container size
 - Maintains aspect ratio
+- EQ/Volume controls scale with deck size
 
 #### Performance
 - Lazy waveform generation
 - Efficient progress updates
-- No impact on main player
+- Separate audio contexts prevent main player impact
 - Optimized for long sessions
+- Independent audio nodes per deck
+- Minimal CPU overhead
 
 ### Keyboard Shortcuts
 Currently, deck controls are mouse-based. Future updates may include:
