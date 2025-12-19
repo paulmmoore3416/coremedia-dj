@@ -6,6 +6,12 @@
 
 A professional-grade DJ application and media player built with modern web technologies. Transform your browser into a complete DJ workstation with multi-deck mixing, effects, and advanced audio processing.
 
+## 🎧 Live Demo
+
+**[🚀 Launch CoreMedia DJ](https://paulmmoore3416.github.io/coremedia-dj/)**
+
+No installation required - runs entirely in your browser!
+
 ## Features
 
 ### Media Support
