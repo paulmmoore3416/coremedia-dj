@@ -621,13 +621,35 @@
 
                 <!-- DJ Mixer Controls -->
                 <div class="dj-mixer">
-                    <div class="crossfader-section">
-                        <label>CROSSFADER</label>
-                        <input type="range" id="crossfader" class="crossfader" min="0" max="100" value="50">
-                        <div class="crossfader-labels">
-                            <span>A</span>
-                            <span>CENTER</span>
-                            <span>B</span>
+                    <div class="mixer-row">
+                        <div class="crossfader-section">
+                            <label>CROSSFADER</label>
+                            <input type="range" id="crossfader" class="crossfader" min="0" max="100" value="50">
+                            <div class="crossfader-labels">
+                                <span>A</span>
+                                <span>CENTER</span>
+                                <span>B</span>
+                            </div>
+                        </div>
+                        <div class="mixer-controls-row">
+                            <button class="btn-sync" id="syncAB" title="Sync Deck B to Deck A BPM">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M23 4v6h-6M1 20v-6h6"/>
+                                    <path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/>
+                                </svg>
+                                SYNC B→A
+                            </button>
+                            <button class="btn-sync" id="syncBA" title="Sync Deck A to Deck B BPM">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M23 4v6h-6M1 20v-6h6"/>
+                                    <path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/>
+                                </svg>
+                                SYNC A→B
+                            </button>
+                            <div class="master-meter-container">
+                                <label>MASTER</label>
+                                <canvas id="masterMeter" width="60" height="100"></canvas>
+                            </div>
                         </div>
                     </div>
                 </div>

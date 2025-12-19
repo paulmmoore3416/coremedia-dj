@@ -2013,11 +2013,77 @@ body {
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
 }
 
+.mixer-row {
+    display: flex;
+    gap: 30px;
+    align-items: center;
+    justify-content: space-between;
+}
+
 .crossfader-section {
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 10px;
+    flex: 1;
+}
+
+.mixer-controls-row {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+}
+
+.btn-sync {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 16px;
+    background: linear-gradient(135deg, var(--accent-primary), #1f6feb);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: bold;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    transition: all 0.3s;
+    box-shadow: 0 4px 12px rgba(88, 166, 255, 0.3);
+}
+
+.btn-sync:hover {
+    background: linear-gradient(135deg, #79c0ff, var(--accent-primary));
+    box-shadow: 0 6px 20px rgba(88, 166, 255, 0.5);
+    transform: translateY(-2px);
+}
+
+.btn-sync:active {
+    transform: translateY(0);
+}
+
+.btn-sync svg {
+    flex-shrink: 0;
+}
+
+.master-meter-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+}
+
+.master-meter-container label {
+    font-size: 11px;
+    font-weight: bold;
+    color: var(--text-secondary);
+    letter-spacing: 1px;
+}
+
+#masterMeter {
+    background: rgba(13, 17, 23, 0.8);
+    border: 2px solid rgba(88, 166, 255, 0.3);
+    border-radius: 6px;
+    box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.6);
 }
 
 .crossfader-section label {

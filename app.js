@@ -2895,6 +2895,15 @@ class CoreMedia {
 
         // Setup playlist item dragging
         this.setupPlaylistDragging();
+
+        // Setup BPM sync buttons
+        this.setupBPMSync();
+
+        // Setup master meter
+        this.setupMasterMeter();
+
+        // Setup keyboard shortcuts for decks
+        this.setupDeckKeyboardShortcuts();
     }
 
     setupDeckDragDrop(deckId) {
@@ -3112,6 +3121,189 @@ class CoreMedia {
             if (deck.gainNode) {
                 const currentVolume = parseInt(document.getElementById(`deckVolume${deckId}`)?.value || 85) / 100;
                 deck.gainNode.gain.value = currentVolume * rightVolume;
+            }
+        });
+    }
+
+    setupBPMSync() {
+        const syncAB = document.getElementById('syncAB');
+        const syncBA = document.getElementById('syncBA');
+
+        if (syncAB) {
+            syncAB.addEventListener('click', () => {
+                // Sync Deck B to match Deck A's playback rate
+                const deckA = this.decks['A'];
+                const deckB = this.decks['B'];
+
+                if (deckA.player && deckB.player && deckA.player.src && deckB.player.src) {
+                    deckB.player.playbackRate = deckA.player.playbackRate;
+                    console.log(`Synced Deck B to Deck A: ${deckA.player.playbackRate}x`);
+
+                    // Visual feedback
+                    syncAB.style.background = 'linear-gradient(135deg, #4ade80, #22c55e)';
+                    setTimeout(() => {
+                        syncAB.style.background = '';
+                    }, 500);
+                }
+            });
+        }
+
+        if (syncBA) {
+            syncBA.addEventListener('click', () => {
+                // Sync Deck A to match Deck B's playback rate
+                const deckA = this.decks['A'];
+                const deckB = this.decks['B'];
+
+                if (deckA.player && deckB.player && deckA.player.src && deckB.player.src) {
+                    deckA.player.playbackRate = deckB.player.playbackRate;
+                    console.log(`Synced Deck A to Deck B: ${deckB.player.playbackRate}x`);
+
+                    // Visual feedback
+                    syncBA.style.background = 'linear-gradient(135deg, #4ade80, #22c55e)';
+                    setTimeout(() => {
+                        syncBA.style.background = '';
+                    }, 500);
+                }
+            });
+        }
+    }
+
+    setupMasterMeter() {
+        const canvas = document.getElementById('masterMeter');
+        if (!canvas) return;
+
+        const ctx = canvas.getContext('2d');
+        this.masterMeterCanvas = canvas;
+        this.masterMeterCtx = ctx;
+
+        // Create analyser for master output
+        if (this.audioContext) {
+            this.masterAnalyser = this.audioContext.createAnalyser();
+            this.masterAnalyser.fftSize = 256;
+            this.masterAnalyser.smoothingTimeConstant = 0.8;
+
+            // Connect the last node in chain (final EQ filter) to master analyser
+            if (this.eqFilters && this.eqFilters.length > 0) {
+                this.eqFilters[this.eqFilters.length - 1].connect(this.masterAnalyser);
+            }
+        }
+
+        // Draw meter
+        this.drawMasterMeter();
+    }
+
+    drawMasterMeter() {
+        if (!this.masterMeterCtx || !this.masterAnalyser) return;
+
+        const draw = () => {
+            if (!this.isDeckView) {
+                requestAnimationFrame(draw);
+                return;
+            }
+
+            const canvas = this.masterMeterCanvas;
+            const ctx = this.masterMeterCtx;
+            const width = canvas.width;
+            const height = canvas.height;
+
+            const dataArray = new Uint8Array(this.masterAnalyser.frequencyBinCount);
+            this.masterAnalyser.getByteFrequencyData(dataArray);
+
+            // Calculate average level
+            const average = dataArray.reduce((a, b) => a + b, 0) / dataArray.length;
+            const level = average / 255;
+
+            // Clear canvas
+            ctx.clearRect(0, 0, width, height);
+
+            // Draw background
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.3)';
+            ctx.fillRect(0, 0, width, height);
+
+            // Draw level bars
+            const barHeight = (height - 10) * level;
+            const gradient = ctx.createLinearGradient(0, height, 0, 0);
+
+            if (level < 0.6) {
+                gradient.addColorStop(0, '#22c55e'); // Green
+                gradient.addColorStop(1, '#4ade80');
+            } else if (level < 0.85) {
+                gradient.addColorStop(0, '#eab308'); // Yellow
+                gradient.addColorStop(1, '#fbbf24');
+            } else {
+                gradient.addColorStop(0, '#ef4444'); // Red
+                gradient.addColorStop(1, '#f87171');
+            }
+
+            ctx.fillStyle = gradient;
+            ctx.fillRect(5, height - barHeight - 5, width - 10, barHeight);
+
+            // Draw peak indicator
+            if (level > 0.95) {
+                ctx.fillStyle = '#ef4444';
+                ctx.fillRect(0, 0, width, 5);
+            }
+
+            // Draw scale marks
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.2)';
+            ctx.lineWidth = 1;
+            for (let i = 0; i <= 4; i++) {
+                const y = (height / 4) * i;
+                ctx.beginPath();
+                ctx.moveTo(0, y);
+                ctx.lineTo(width, y);
+                ctx.stroke();
+            }
+
+            requestAnimationFrame(draw);
+        };
+
+        draw();
+    }
+
+    setupDeckKeyboardShortcuts() {
+        document.addEventListener('keydown', (e) => {
+            // Only handle shortcuts when in deck view
+            if (!this.isDeckView) return;
+
+            // Alt+1-4: Play/Pause decks A-D
+            if (e.altKey && e.key >= '1' && e.key <= '4') {
+                e.preventDefault();
+                const deckMap = {'1': 'A', '2': 'B', '3': 'C', '4': 'D'};
+                const deckId = deckMap[e.key];
+                this.toggleDeckPlay(deckId);
+            }
+
+            // Alt+Q/W/E/R: Load current track to decks A/B/C/D
+            if (e.altKey) {
+                const loadMap = {'q': 'A', 'w': 'B', 'e': 'C', 'r': 'D'};
+                if (loadMap[e.key.toLowerCase()]) {
+                    e.preventDefault();
+                    this.loadToDeck(loadMap[e.key.toLowerCase()]);
+                }
+            }
+
+            // Alt+Left/Right: Move crossfader
+            if (e.altKey && (e.key === 'ArrowLeft' || e.key === 'ArrowRight')) {
+                e.preventDefault();
+                const crossfader = document.getElementById('crossfader');
+                if (crossfader) {
+                    const current = parseInt(crossfader.value);
+                    const step = 5;
+                    if (e.key === 'ArrowLeft') {
+                        crossfader.value = Math.max(0, current - step);
+                    } else {
+                        crossfader.value = Math.min(100, current + step);
+                    }
+                    this.crossfaderValue = parseInt(crossfader.value);
+                    this.applyCrossfader();
+                }
+            }
+
+            // Alt+S: Sync B to A
+            if (e.altKey && e.key.toLowerCase() === 's') {
+                e.preventDefault();
+                document.getElementById('syncAB')?.click();
             }
         });
     }
