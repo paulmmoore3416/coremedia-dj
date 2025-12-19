@@ -58,6 +58,9 @@ class CoreMedia {
         this.slicerDivisions = 8; // number of slices
         this.slicerBuffers = [];
 
+        // Audio Sources (for multiple players)
+        this.audioSources = {}; // Map of player IDs to MediaElementSource nodes
+
         // Performance Optimizations
         this.visualizerAnimationId = null;
         this.spectralAnimationId = null;
@@ -381,51 +384,70 @@ class CoreMedia {
     }
 
     setupAudioSource(player) {
-        if (!this.audioContext || this.audioSource) return;
+        if (!this.audioContext) return;
+
+        // Check if we already have a source for this specific player
+        const playerKey = player.id;
+        if (this.audioSources && this.audioSources[playerKey]) {
+            console.log(`Audio already set up for ${playerKey}`);
+            return;
+        }
 
         try {
-            this.audioSource = this.audioContext.createMediaElementSource(player);
-            this.audioSource.connect(this.analyser);
-
-            // Setup equalizer
-            this.eqFilters = [];
-            const frequencies = [60, 170, 310, 600, 1000, 3000, 6000, 12000, 14000, 16000];
-
-            frequencies.forEach(freq => {
-                const filter = this.audioContext.createBiquadFilter();
-                filter.type = 'peaking';
-                filter.frequency.value = freq;
-                filter.Q.value = 1;
-                filter.gain.value = 0;
-                this.eqFilters.push(filter);
-            });
-
-            // Build complete audio chain: analyser → mixing board → EQ → destination
-            let source = this.analyser;
-
-            // Connect mixing board if it exists
-            if (this.mixerNodes.gainNode) {
-                source.connect(this.mixerNodes.gainNode);
-                this.mixerNodes.gainNode.connect(this.mixerNodes.bassFilter);
-                this.mixerNodes.bassFilter.connect(this.mixerNodes.midFilter);
-                this.mixerNodes.midFilter.connect(this.mixerNodes.trebleFilter);
-                this.mixerNodes.trebleFilter.connect(this.mixerNodes.colorFilter);
-                this.mixerNodes.colorFilter.connect(this.mixerNodes.presenceFilter);
-                source = this.mixerNodes.presenceFilter;
+            // Initialize audio sources map if needed
+            if (!this.audioSources) {
+                this.audioSources = {};
             }
 
-            // Connect EQ filters in series
-            this.eqFilters.forEach(filter => {
-                source.connect(filter);
-                source = filter;
-            });
+            // Create media element source for this player
+            const mediaSource = this.audioContext.createMediaElementSource(player);
+            this.audioSources[playerKey] = mediaSource;
 
-            // Final connection to destination
-            source.connect(this.audioContext.destination);
+            // Connect to analyser
+            mediaSource.connect(this.analyser);
 
+            // Setup equalizer (only once)
+            if (!this.eqFilters || this.eqFilters.length === 0) {
+                this.eqFilters = [];
+                const frequencies = [60, 170, 310, 600, 1000, 3000, 6000, 12000, 14000, 16000];
+
+                frequencies.forEach(freq => {
+                    const filter = this.audioContext.createBiquadFilter();
+                    filter.type = 'peaking';
+                    filter.frequency.value = freq;
+                    filter.Q.value = 1;
+                    filter.gain.value = 0;
+                    this.eqFilters.push(filter);
+                });
+
+                // Build complete audio chain: analyser → mixing board → EQ → destination
+                let source = this.analyser;
+
+                // Connect mixing board if it exists
+                if (this.mixerNodes.gainNode) {
+                    source.connect(this.mixerNodes.gainNode);
+                    this.mixerNodes.gainNode.connect(this.mixerNodes.bassFilter);
+                    this.mixerNodes.bassFilter.connect(this.mixerNodes.midFilter);
+                    this.mixerNodes.midFilter.connect(this.mixerNodes.trebleFilter);
+                    this.mixerNodes.trebleFilter.connect(this.mixerNodes.colorFilter);
+                    this.mixerNodes.colorFilter.connect(this.mixerNodes.presenceFilter);
+                    source = this.mixerNodes.presenceFilter;
+                }
+
+                // Connect EQ filters in series
+                this.eqFilters.forEach(filter => {
+                    source.connect(filter);
+                    source = filter;
+                });
+
+                // Final connection to destination
+                source.connect(this.audioContext.destination);
+            }
+
+            console.log(`Audio source created for ${playerKey}`);
             this.drawVisualizer();
         } catch (e) {
-            console.warn('Could not setup audio source:', e);
+            console.error('Could not setup audio source:', e);
         }
     }
 
@@ -805,7 +827,14 @@ class CoreMedia {
     play() {
         if (!this.currentPlayer || !this.currentPlayer.src) return;
 
+        // Ensure audio source is set up for current player
+        if (this.audioContext && !this.audioSources[this.currentPlayer.id]) {
+            console.log('Setting up audio source for', this.currentPlayer.id);
+            this.setupAudioSource(this.currentPlayer);
+        }
+
         if (this.audioContext && this.audioContext.state === 'suspended') {
+            console.log('Resuming audio context');
             this.audioContext.resume();
         }
 
