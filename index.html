@@ -28,6 +28,13 @@
                         <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
                     </svg>
                 </button>
+                <button class="btn-icon" id="libraryBtn" title="Music Library">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M9 18V5l12-2v13"/>
+                        <circle cx="6" cy="18" r="3"/>
+                        <circle cx="18" cy="16" r="3"/>
+                    </svg>
+                </button>
                 <button class="btn-icon" id="settingsBtn" title="Settings">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <circle cx="12" cy="12" r="3"/>
@@ -951,8 +958,109 @@
         </div>
     </div>
 
+    <!-- Music Library Modal -->
+    <div class="modal" id="libraryModal">
+        <div class="modal-content library-content">
+            <div class="library-header">
+                <h2>Music Library</h2>
+                <button class="btn-icon" onclick="player.closeLibraryManager()" title="Close">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Library Toolbar -->
+            <div class="library-toolbar">
+                <div class="library-stats">
+                    <span id="libraryTrackCount">0 tracks</span>
+                </div>
+                <div class="library-actions">
+                    <button class="btn-small" id="scanLibraryBtn">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                            <polyline points="17 8 12 3 7 8"></polyline>
+                            <line x1="12" y1="3" x2="12" y2="15"></line>
+                        </svg>
+                        Import Files
+                    </button>
+                    <button class="btn-small" onclick="player.exportLibrary()">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                            <polyline points="7 10 12 15 17 10"></polyline>
+                            <line x1="12" y1="15" x2="12" y2="3"></line>
+                        </svg>
+                        Export Library
+                    </button>
+                    <button class="btn-small" onclick="player.importLibrary()">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"/>
+                        </svg>
+                        Import Backup
+                    </button>
+                </div>
+            </div>
+
+            <!-- Genre Filters -->
+            <div class="library-filters">
+                <button class="genre-filter-btn active" data-genre="all">All Genres</button>
+                <button class="genre-filter-btn" data-genre="Techno">Techno</button>
+                <button class="genre-filter-btn" data-genre="Jump Style">Jump Style</button>
+                <button class="genre-filter-btn" data-genre="House">House</button>
+                <button class="genre-filter-btn" data-genre="EDM">EDM</button>
+                <button class="genre-filter-btn" data-genre="Deep House">Deep House</button>
+                <button class="genre-filter-btn" data-genre="Progressive House">Progressive</button>
+            </div>
+
+            <!-- Playlist Presets -->
+            <div class="library-presets">
+                <h3>Quick Playlists</h3>
+                <div class="preset-buttons">
+                    <button class="btn-preset playlist-preset-btn" data-preset="2009-2010 Jump Style Mix">
+                        2009-2010 Jump Style Mix
+                    </button>
+                    <button class="btn-preset playlist-preset-btn" data-preset="2009-2010 House Classics">
+                        2009-2010 House Classics
+                    </button>
+                    <button class="btn-preset playlist-preset-btn" data-preset="Peak Hour Energy">
+                        Peak Hour Energy
+                    </button>
+                    <button class="btn-preset playlist-preset-btn" data-preset="Deep Grooves">
+                        Deep Grooves
+                    </button>
+                </div>
+            </div>
+
+            <!-- Track Grid -->
+            <div class="library-grid" id="libraryGrid">
+                <!-- Tracks will be populated by JavaScript -->
+            </div>
+
+            <!-- Import Progress -->
+            <div class="library-progress" id="libraryProgress" style="display: none;">
+                <div class="progress-bar-container">
+                    <div class="progress-bar" id="libraryProgressBar"></div>
+                </div>
+                <div class="progress-text" id="libraryProgressText">Scanning files...</div>
+            </div>
+
+            <!-- Help Text -->
+            <div class="library-help">
+                <p>
+                    <strong>Demo Tracks:</strong> Click the download icon on demo tracks to visit the source and download legally.
+                    <br>
+                    <strong>Your Music:</strong> Use "Import Files" to add your own music collection.
+                    <br>
+                    <strong>Supported Formats:</strong> MP3, WAV, OGG, M4A, AAC, FLAC, MP4, WEBM
+                </p>
+            </div>
+        </div>
+    </div>
+
     <input type="file" id="fileInput" accept="video/*,audio/*" multiple style="display:none;">
     <input type="file" id="subtitleInput" accept=".srt,.vtt,.ass" style="display:none;">
+    <input type="file" id="libraryFolderInput" webkitdirectory directory multiple style="display:none;">
 
     <script src="app.js"></script>
 </body>

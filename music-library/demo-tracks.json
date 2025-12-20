@@ -1,0 +1,328 @@
+{
+  "demoTracks": {
+    "technoJumpstyle": [
+      {
+        "title": "Cyber Dreams",
+        "artist": "Free Music Archive",
+        "genre": "Techno",
+        "bpm": 138,
+        "url": "https://freemusicarchive.org/",
+        "license": "CC BY",
+        "description": "Hard driving techno beat"
+      },
+      {
+        "title": "Digital Pulse",
+        "artist": "Free Stock Music",
+        "genre": "Techno",
+        "bpm": 140,
+        "url": "https://www.free-stock-music.com/",
+        "license": "CC BY",
+        "description": "Industrial techno groove"
+      },
+      {
+        "title": "Neon Nights",
+        "artist": "FMA Electronic",
+        "genre": "Jump Style",
+        "bpm": 145,
+        "url": "https://freemusicarchive.org/genre/Electronic/",
+        "license": "CC BY-SA",
+        "description": "High energy jump style"
+      },
+      {
+        "title": "Synth Wave Runner",
+        "artist": "eProves",
+        "genre": "Techno",
+        "bpm": 135,
+        "url": "https://eproves.com/techno-no-copyright-music/",
+        "license": "Royalty Free",
+        "description": "Synthwave influenced techno"
+      },
+      {
+        "title": "Acid Machine",
+        "artist": "Bensound",
+        "genre": "Acid Techno",
+        "bpm": 142,
+        "url": "https://www.bensound.com/royalty-free-music/electronic",
+        "license": "Royalty Free",
+        "description": "Classic acid techno sound"
+      },
+      {
+        "title": "Hard Bass Kick",
+        "artist": "Free Music Archive",
+        "genre": "Hardstyle",
+        "bpm": 150,
+        "url": "https://freemusicarchive.org/",
+        "license": "CC BY",
+        "description": "Powerful hardstyle anthem"
+      },
+      {
+        "title": "Rave Generator",
+        "artist": "SoundCloud CC",
+        "genre": "Hardcore",
+        "bpm": 160,
+        "url": "https://soundcloud.com/copyright-free-edm",
+        "license": "CC0",
+        "description": "Old school hardcore rave"
+      },
+      {
+        "title": "Minimal Groove",
+        "artist": "Free Stock Music",
+        "genre": "Minimal Techno",
+        "bpm": 128,
+        "url": "https://www.free-stock-music.com/dance-edm.html",
+        "license": "CC BY",
+        "description": "Deep minimal techno"
+      },
+      {
+        "title": "Industrial Storm",
+        "artist": "eProves Techno",
+        "genre": "Industrial",
+        "bpm": 136,
+        "url": "https://eproves.com/techno-no-copyright-music/",
+        "license": "Royalty Free",
+        "description": "Dark industrial techno"
+      },
+      {
+        "title": "Electric Energy",
+        "artist": "FMA Artists",
+        "genre": "Jump Style",
+        "bpm": 148,
+        "url": "https://freemusicarchive.org/genre/Electronic/",
+        "license": "CC BY-NC",
+        "description": "Energetic jump style track"
+      }
+    ],
+    "houseEdm": [
+      {
+        "title": "Deep Space House",
+        "artist": "eProves House",
+        "genre": "Deep House",
+        "bpm": 122,
+        "url": "https://eproves.com/vlog-no-copyright-music/house/",
+        "license": "Royalty Free",
+        "description": "Atmospheric deep house"
+      },
+      {
+        "title": "Progressive Horizon",
+        "artist": "Free Music Archive",
+        "genre": "Progressive House",
+        "bpm": 128,
+        "url": "https://freemusicarchive.org/genre/Electronic/",
+        "license": "CC BY",
+        "description": "Uplifting progressive house"
+      },
+      {
+        "title": "Electro Funk",
+        "artist": "Bensound",
+        "genre": "Electro House",
+        "bpm": 130,
+        "url": "https://www.bensound.com/royalty-free-music/electronic",
+        "license": "Royalty Free",
+        "description": "Funky electro house groove"
+      },
+      {
+        "title": "Miami Vice",
+        "artist": "Free Stock Music",
+        "genre": "Tech House",
+        "bpm": 125,
+        "url": "https://www.free-stock-music.com/dance-edm.html",
+        "license": "CC BY",
+        "description": "Miami influenced tech house"
+      },
+      {
+        "title": "Bass Drop",
+        "artist": "SoundCloud CC EDM",
+        "genre": "Bass House",
+        "bpm": 126,
+        "url": "https://soundcloud.com/copyright-free-edm",
+        "license": "CC0",
+        "description": "Heavy bass house banger"
+      },
+      {
+        "title": "Future Bounce",
+        "artist": "eProves",
+        "genre": "Future House",
+        "bpm": 124,
+        "url": "https://eproves.com/vlog-no-copyright-music/house/",
+        "license": "Royalty Free",
+        "description": "Modern future house sound"
+      },
+      {
+        "title": "Tropical Vibes",
+        "artist": "Free Music Archive",
+        "genre": "Tropical House",
+        "bpm": 115,
+        "url": "https://freemusicarchive.org/",
+        "license": "CC BY-SA",
+        "description": "Chill tropical house"
+      },
+      {
+        "title": "EDM Anthem",
+        "artist": "EDM Royalty Free",
+        "genre": "EDM",
+        "bpm": 132,
+        "url": "https://edmroyaltyfree.net/",
+        "license": "CC BY",
+        "description": "Festival ready EDM anthem"
+      },
+      {
+        "title": "Dubstep Wobble",
+        "artist": "Free Stock Music",
+        "genre": "Dubstep",
+        "bpm": 140,
+        "url": "https://www.free-stock-music.com/dance-edm.html",
+        "license": "CC BY",
+        "description": "Heavy dubstep wobble bass"
+      },
+      {
+        "title": "Future Bass Emotion",
+        "artist": "SoundCloud Copyright Free",
+        "genre": "Future Bass",
+        "bpm": 150,
+        "url": "https://soundcloud.com/copyright-free-edm",
+        "license": "CC0",
+        "description": "Emotional future bass"
+      },
+      {
+        "title": "Trance Odyssey",
+        "artist": "Bensound Electronic",
+        "genre": "Trance",
+        "bpm": 138,
+        "url": "https://www.bensound.com/royalty-free-music/electronic",
+        "license": "Royalty Free",
+        "description": "Uplifting trance journey"
+      },
+      {
+        "title": "Drum and Bass Rush",
+        "artist": "Free Music Archive",
+        "genre": "Drum & Bass",
+        "bpm": 174,
+        "url": "https://freemusicarchive.org/genre/Electronic/",
+        "license": "CC BY",
+        "description": "Fast paced drum and bass"
+      },
+      {
+        "title": "Garage Shuffle",
+        "artist": "eProves House",
+        "genre": "UK Garage",
+        "bpm": 130,
+        "url": "https://eproves.com/vlog-no-copyright-music/house/",
+        "license": "Royalty Free",
+        "description": "Classic UK garage groove"
+      },
+      {
+        "title": "Disco House Party",
+        "artist": "Free Stock Music",
+        "genre": "Disco House",
+        "bpm": 120,
+        "url": "https://www.free-stock-music.com/dance-edm.html",
+        "license": "CC BY",
+        "description": "Funky disco house"
+      },
+      {
+        "title": "Melodic Techno Journey",
+        "artist": "EDM RF",
+        "genre": "Melodic Techno",
+        "bpm": 124,
+        "url": "https://edmroyaltyfree.net/",
+        "license": "CC BY",
+        "description": "Deep melodic techno"
+      },
+      {
+        "title": "Big Room Energy",
+        "artist": "SoundCloud CC",
+        "genre": "Big Room",
+        "bpm": 128,
+        "url": "https://soundcloud.com/copyright-free-edm",
+        "license": "CC0",
+        "description": "Festival big room house"
+      },
+      {
+        "title": "Chill Wave Sunset",
+        "artist": "Bensound",
+        "genre": "Chillwave",
+        "bpm": 110,
+        "url": "https://www.bensound.com/royalty-free-music/electronic",
+        "license": "Royalty Free",
+        "description": "Relaxing chillwave"
+      },
+      {
+        "title": "Synthwave Cruise",
+        "artist": "Free Music Archive",
+        "genre": "Synthwave",
+        "bpm": 118,
+        "url": "https://freemusicarchive.org/",
+        "license": "CC BY-NC-SA",
+        "description": "Retro synthwave drive"
+      },
+      {
+        "title": "Breakbeat Madness",
+        "artist": "eProves",
+        "genre": "Breakbeat",
+        "bpm": 135,
+        "url": "https://eproves.com/vlog-no-copyright-music/house/",
+        "license": "Royalty Free",
+        "description": "Energetic breakbeat"
+      },
+      {
+        "title": "Hands Up Euphoria",
+        "artist": "Free Stock Music",
+        "genre": "Hands Up",
+        "bpm": 145,
+        "url": "https://www.free-stock-music.com/dance-edm.html",
+        "license": "CC BY",
+        "description": "Euphoric hands up anthem"
+      }
+    ]
+  },
+  "playlistPresets": [
+    {
+      "name": "2009-2010 Jump Style Mix",
+      "description": "High energy jump style and techno from the golden era",
+      "tracks": ["Cyber Dreams", "Neon Nights", "Hard Bass Kick", "Rave Generator", "Electric Energy"],
+      "genre": "Jump Style / Techno",
+      "avgBpm": 145
+    },
+    {
+      "name": "2009-2010 House Classics",
+      "description": "Essential house and EDM hits from 2009-2010",
+      "tracks": ["Deep Space House", "Progressive Horizon", "Electro Funk", "Miami Vice", "Bass Drop", "Future Bounce"],
+      "genre": "House / EDM",
+      "avgBpm": 125
+    },
+    {
+      "name": "Peak Hour Energy",
+      "description": "High BPM tracks for peak time sets",
+      "tracks": ["Rave Generator", "Hard Bass Kick", "Drum and Bass Rush", "Future Bass Emotion", "Hands Up Euphoria"],
+      "genre": "Various",
+      "avgBpm": 155
+    },
+    {
+      "name": "Deep Grooves",
+      "description": "Deep house and melodic techno for warm-up sets",
+      "tracks": ["Deep Space House", "Minimal Groove", "Melodic Techno Journey", "Tropical Vibes"],
+      "genre": "Deep / Melodic",
+      "avgBpm": 120
+    }
+  ],
+  "metadata": {
+    "version": "1.0",
+    "lastUpdated": "2025-12-19",
+    "totalTracks": 30,
+    "licenses": [
+      "CC BY - Attribution required",
+      "CC BY-SA - Attribution + ShareAlike",
+      "CC BY-NC - Attribution + Non-Commercial",
+      "CC0 - Public Domain",
+      "Royalty Free - Check individual platform terms"
+    ],
+    "sources": [
+      "Free Music Archive (freemusicarchive.org)",
+      "Free Stock Music (free-stock-music.com)",
+      "eProves (eproves.com)",
+      "SoundCloud Copyright Free (soundcloud.com/copyright-free-edm)",
+      "Bensound (bensound.com)",
+      "EDM Royalty Free (edmroyaltyfree.net)"
+    ]
+  }
+}

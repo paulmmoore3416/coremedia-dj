@@ -126,6 +126,7 @@ class CoreMedia {
         this.initMixingBoard();
         this.initMultiDeck();
         this.initPerformanceOptimizations();
+        this.initMusicLibrary();
     }
 
     initElements() {
@@ -3726,6 +3727,483 @@ class CoreMedia {
         }.bind(this);
 
         console.log('✅ Performance optimizations enabled');
+    }
+
+    // ============================================
+    // MUSIC LIBRARY MANAGEMENT SYSTEM
+    // ============================================
+
+    initMusicLibrary() {
+        this.musicLibrary = {
+            tracks: [],
+            playlists: [],
+            genres: ['Techno', 'Jump Style', 'House', 'EDM', 'Deep House', 'Progressive House'],
+            currentFilter: 'all',
+            scanInProgress: false
+        };
+
+        // Load demo tracks from JSON
+        this.loadDemoTracks();
+
+        // Setup library UI events
+        const libraryBtn = document.getElementById('libraryBtn');
+        const libraryModal = document.getElementById('libraryModal');
+        const scanLibraryBtn = document.getElementById('scanLibraryBtn');
+        const libraryFolderInput = document.getElementById('libraryFolderInput');
+
+        if (libraryBtn) {
+            libraryBtn.addEventListener('click', () => this.openLibraryManager());
+        }
+
+        if (scanLibraryBtn) {
+            scanLibraryBtn.addEventListener('click', () => {
+                libraryFolderInput?.click();
+            });
+        }
+
+        if (libraryFolderInput) {
+            libraryFolderInput.addEventListener('change', (e) => {
+                this.importMusicFiles(e.target.files);
+            });
+        }
+
+        // Setup genre filter buttons
+        document.querySelectorAll('.genre-filter-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                this.filterLibraryByGenre(e.target.dataset.genre);
+            });
+        });
+
+        // Setup playlist preset buttons
+        document.querySelectorAll('.playlist-preset-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                this.loadPlaylistPreset(e.target.dataset.preset);
+            });
+        });
+
+        console.log('✅ Music Library initialized');
+    }
+
+    async loadDemoTracks() {
+        try {
+            const response = await fetch('music-library/demo-tracks.json');
+            const data = await response.json();
+
+            // Parse demo tracks
+            const technoTracks = data.demoTracks.technoJumpstyle.map(track => ({
+                ...track,
+                id: this.generateTrackId(),
+                isDemo: true,
+                local: false,
+                addedDate: new Date().toISOString()
+            }));
+
+            const houseTracks = data.demoTracks.houseEdm.map(track => ({
+                ...track,
+                id: this.generateTrackId(),
+                isDemo: true,
+                local: false,
+                addedDate: new Date().toISOString()
+            }));
+
+            this.musicLibrary.tracks = [...technoTracks, ...houseTracks];
+            this.musicLibrary.playlistPresets = data.playlistPresets || [];
+
+            console.log(`✅ Loaded ${this.musicLibrary.tracks.length} demo tracks`);
+            this.updateLibraryUI();
+        } catch (error) {
+            console.error('Could not load demo tracks:', error);
+        }
+    }
+
+    generateTrackId() {
+        return 'track_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+    }
+
+    async importMusicFiles(files) {
+        if (!files || files.length === 0) return;
+
+        this.musicLibrary.scanInProgress = true;
+        this.updateScanProgress(0, files.length);
+
+        const supportedFormats = ['.mp3', '.wav', '.ogg', '.m4a', '.aac', '.flac', '.mp4', '.webm', '.ogv'];
+
+        for (let i = 0; i < files.length; i++) {
+            const file = files[i];
+            const ext = '.' + file.name.split('.').pop().toLowerCase();
+
+            if (supportedFormats.includes(ext)) {
+                const track = await this.processAudioFile(file);
+                if (track) {
+                    this.musicLibrary.tracks.push(track);
+                }
+            }
+
+            this.updateScanProgress(i + 1, files.length);
+        }
+
+        this.musicLibrary.scanInProgress = false;
+        this.updateLibraryUI();
+
+        // Show success message
+        this.showNotification(`Imported ${files.length} tracks successfully!`);
+    }
+
+    async processAudioFile(file) {
+        try {
+            const url = URL.createObjectURL(file);
+
+            // Create temporary audio element for metadata
+            const audio = new Audio(url);
+
+            return new Promise((resolve) => {
+                audio.addEventListener('loadedmetadata', () => {
+                    // Extract metadata
+                    const track = {
+                        id: this.generateTrackId(),
+                        title: this.extractTitle(file.name),
+                        artist: 'Unknown Artist',
+                        genre: this.detectGenreFromPath(file.webkitRelativePath || file.name),
+                        bpm: this.detectBPMFromFilename(file.name),
+                        duration: audio.duration,
+                        url: url,
+                        filename: file.name,
+                        size: file.size,
+                        local: true,
+                        isDemo: false,
+                        addedDate: new Date().toISOString()
+                    };
+
+                    resolve(track);
+                });
+
+                audio.addEventListener('error', () => {
+                    resolve(null);
+                });
+
+                // Timeout after 5 seconds
+                setTimeout(() => resolve(null), 5000);
+            });
+        } catch (error) {
+            console.error('Error processing file:', file.name, error);
+            return null;
+        }
+    }
+
+    extractTitle(filename) {
+        // Remove extension
+        let name = filename.replace(/\.[^/.]+$/, '');
+
+        // Try to extract from "Artist - Title (BPM)" format
+        if (name.includes(' - ')) {
+            const parts = name.split(' - ');
+            name = parts[1] || parts[0];
+        }
+
+        // Remove BPM info in parentheses
+        name = name.replace(/\s*\([^)]*\)\s*/g, '');
+
+        return name.trim();
+    }
+
+    detectGenreFromPath(path) {
+        const lowerPath = path.toLowerCase();
+
+        if (lowerPath.includes('techno')) return 'Techno';
+        if (lowerPath.includes('jump') || lowerPath.includes('jumpstyle')) return 'Jump Style';
+        if (lowerPath.includes('house')) return 'House';
+        if (lowerPath.includes('edm')) return 'EDM';
+        if (lowerPath.includes('trance')) return 'Trance';
+        if (lowerPath.includes('dubstep')) return 'Dubstep';
+        if (lowerPath.includes('bass')) return 'Bass House';
+        if (lowerPath.includes('deep')) return 'Deep House';
+
+        return 'Electronic';
+    }
+
+    detectBPMFromFilename(filename) {
+        // Look for BPM in format "(120)" or "(120 BPM)" or "120BPM"
+        const bpmMatch = filename.match(/\(?(\d{2,3})\s?bpm\)?/i) || filename.match(/\((\d{2,3})\)/);
+
+        if (bpmMatch) {
+            const bpm = parseInt(bpmMatch[1]);
+            if (bpm >= 60 && bpm <= 200) {
+                return bpm;
+            }
+        }
+
+        return 0; // Unknown BPM
+    }
+
+    updateScanProgress(current, total) {
+        const progressBar = document.getElementById('libraryProgressBar');
+        const progressText = document.getElementById('libraryProgressText');
+
+        if (progressBar) {
+            const percent = (current / total) * 100;
+            progressBar.style.width = percent + '%';
+        }
+
+        if (progressText) {
+            progressText.textContent = `Scanning ${current} / ${total} files...`;
+        }
+    }
+
+    filterLibraryByGenre(genre) {
+        this.musicLibrary.currentFilter = genre;
+        this.updateLibraryUI();
+
+        // Update active button
+        document.querySelectorAll('.genre-filter-btn').forEach(btn => {
+            btn.classList.toggle('active', btn.dataset.genre === genre);
+        });
+    }
+
+    updateLibraryUI() {
+        const libraryGrid = document.getElementById('libraryGrid');
+        if (!libraryGrid) return;
+
+        // Filter tracks
+        let tracks = this.musicLibrary.tracks;
+        if (this.musicLibrary.currentFilter !== 'all') {
+            tracks = tracks.filter(t => t.genre === this.musicLibrary.currentFilter);
+        }
+
+        // Sort by title
+        tracks.sort((a, b) => a.title.localeCompare(b.title));
+
+        // Render tracks
+        libraryGrid.innerHTML = tracks.map(track => `
+            <div class="library-track-card" data-track-id="${track.id}">
+                <div class="track-card-header">
+                    <div class="track-genre-badge">${track.genre}</div>
+                    ${track.bpm > 0 ? `<div class="track-bpm-badge">${track.bpm} BPM</div>` : ''}
+                </div>
+                <div class="track-card-title">${track.title}</div>
+                <div class="track-card-artist">${track.artist}</div>
+                <div class="track-card-actions">
+                    <button class="btn-track-action" onclick="player.addTrackToPlaylist('${track.id}')" title="Add to Playlist">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="12" y1="5" x2="12" y2="19"></line>
+                            <line x1="5" y1="12" x2="19" y2="12"></line>
+                        </svg>
+                    </button>
+                    <button class="btn-track-action" onclick="player.loadTrackToPlayer('${track.id}')" title="Load to Player">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                        </svg>
+                    </button>
+                    ${track.isDemo ? `
+                        <a class="btn-track-action" href="${track.url}" target="_blank" title="Download from ${track.artist}">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                <polyline points="7 10 12 15 17 10"></polyline>
+                                <line x1="12" y1="15" x2="12" y2="3"></line>
+                            </svg>
+                        </a>
+                    ` : ''}
+                </div>
+            </div>
+        `).join('');
+
+        // Update track count
+        const trackCount = document.getElementById('libraryTrackCount');
+        if (trackCount) {
+            trackCount.textContent = `${tracks.length} track${tracks.length !== 1 ? 's' : ''}`;
+        }
+    }
+
+    addTrackToPlaylist(trackId) {
+        const track = this.musicLibrary.tracks.find(t => t.id === trackId);
+        if (!track) return;
+
+        // Add to main playlist
+        this.addToPlaylist({
+            name: track.title,
+            url: track.url,
+            type: track.url.includes('.mp4') || track.url.includes('.webm') ? 'video' : 'audio'
+        });
+
+        this.showNotification(`Added "${track.title}" to playlist`);
+    }
+
+    loadTrackToPlayer(trackId) {
+        const track = this.musicLibrary.tracks.find(t => t.id === trackId);
+        if (!track) return;
+
+        // Add to playlist and play immediately
+        this.addToPlaylist({
+            name: track.title,
+            url: track.url,
+            type: track.url.includes('.mp4') || track.url.includes('.webm') ? 'video' : 'audio'
+        });
+
+        // Play the last added track
+        this.playTrack(this.playlist.length - 1);
+
+        this.showNotification(`Now playing: ${track.title}`);
+    }
+
+    loadPlaylistPreset(presetName) {
+        const preset = this.musicLibrary.playlistPresets.find(p => p.name === presetName);
+        if (!preset) return;
+
+        // Clear current playlist
+        this.clearPlaylist();
+
+        // Add tracks from preset
+        preset.tracks.forEach(trackName => {
+            const track = this.musicLibrary.tracks.find(t => t.title === trackName);
+            if (track) {
+                this.addTrackToPlaylist(track.id);
+            }
+        });
+
+        this.showNotification(`Loaded preset: ${preset.name}`);
+        this.closeLibraryManager();
+    }
+
+    openLibraryManager() {
+        const modal = document.getElementById('libraryModal');
+        if (modal) {
+            modal.classList.add('active');
+            this.updateLibraryUI();
+        }
+    }
+
+    closeLibraryManager() {
+        const modal = document.getElementById('libraryModal');
+        if (modal) {
+            modal.classList.remove('active');
+        }
+    }
+
+    showNotification(message, duration = 3000) {
+        // Create notification element
+        const notification = document.createElement('div');
+        notification.className = 'notification-toast';
+        notification.textContent = message;
+
+        document.body.appendChild(notification);
+
+        // Trigger animation
+        setTimeout(() => notification.classList.add('show'), 10);
+
+        // Remove after duration
+        setTimeout(() => {
+            notification.classList.remove('show');
+            setTimeout(() => notification.remove(), 300);
+        }, duration);
+    }
+
+    // Auto-detect BPM using Web Audio API beat detection
+    async autoDetectBPM(trackId) {
+        const track = this.musicLibrary.tracks.find(t => t.id === trackId);
+        if (!track || !track.url) return 0;
+
+        try {
+            // Load audio buffer
+            const audioBuffer = await this.getCachedAudioBuffer(track.url);
+            const channelData = audioBuffer.getChannelData(0);
+
+            // Simple beat detection algorithm
+            const sampleRate = audioBuffer.sampleRate;
+            const windowSize = Math.floor(sampleRate * 0.5); // 500ms windows
+            const peaks = [];
+
+            for (let i = 0; i < channelData.length - windowSize; i += windowSize) {
+                let sum = 0;
+                for (let j = 0; j < windowSize; j++) {
+                    sum += Math.abs(channelData[i + j]);
+                }
+                const avg = sum / windowSize;
+                peaks.push({ time: i / sampleRate, energy: avg });
+            }
+
+            // Find intervals between peaks
+            const threshold = peaks.reduce((sum, p) => sum + p.energy, 0) / peaks.length * 1.5;
+            const strongPeaks = peaks.filter(p => p.energy > threshold);
+
+            if (strongPeaks.length < 4) return 0;
+
+            const intervals = [];
+            for (let i = 1; i < strongPeaks.length; i++) {
+                intervals.push(strongPeaks[i].time - strongPeaks[i - 1].time);
+            }
+
+            // Calculate BPM from average interval
+            const avgInterval = intervals.reduce((sum, i) => sum + i, 0) / intervals.length;
+            const bpm = Math.round(60 / avgInterval);
+
+            // Validate BPM range
+            if (bpm >= 60 && bpm <= 200) {
+                track.bpm = bpm;
+                this.updateLibraryUI();
+                return bpm;
+            }
+
+            return 0;
+        } catch (error) {
+            console.error('BPM detection failed:', error);
+            return 0;
+        }
+    }
+
+    // Export library to JSON for backup
+    exportLibrary() {
+        const data = {
+            tracks: this.musicLibrary.tracks.filter(t => !t.isDemo), // Don't export demo tracks
+            playlists: this.musicLibrary.playlists,
+            exportDate: new Date().toISOString()
+        };
+
+        const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `coremedia-library-${Date.now()}.json`;
+        a.click();
+
+        URL.revokeObjectURL(url);
+        this.showNotification('Library exported successfully!');
+    }
+
+    // Import library from JSON backup
+    async importLibrary() {
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.accept = '.json';
+
+        input.addEventListener('change', async (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            try {
+                const text = await file.text();
+                const data = JSON.parse(text);
+
+                // Merge with existing library
+                if (data.tracks && Array.isArray(data.tracks)) {
+                    this.musicLibrary.tracks = [
+                        ...this.musicLibrary.tracks.filter(t => t.isDemo), // Keep demos
+                        ...data.tracks
+                    ];
+                }
+
+                if (data.playlists && Array.isArray(data.playlists)) {
+                    this.musicLibrary.playlists = data.playlists;
+                }
+
+                this.updateLibraryUI();
+                this.showNotification(`Imported ${data.tracks?.length || 0} tracks!`);
+            } catch (error) {
+                console.error('Import failed:', error);
+                this.showNotification('Import failed. Please check the file format.');
+            }
+        });
+
+        input.click();
     }
 }
 
