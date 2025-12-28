@@ -2873,3 +2873,583 @@ body {
 .notification-toast.show {
     bottom: 30px;
 }
+
+/* ============================================
+   8 ADVANCED STYLING ENHANCEMENTS
+   ============================================ */
+
+/* ENHANCEMENT 1: Glassmorphism Effects
+   Creates frosted glass effect for modern UI depth */
+
+.modal-content,
+.library-content,
+.settings-content,
+.help-content {
+    background: rgba(33, 38, 45, 0.85);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(88, 166, 255, 0.2);
+    box-shadow:
+        0 8px 32px rgba(0, 0, 0, 0.4),
+        inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+.library-track-card,
+.deck,
+.dj-mixer,
+.sidebar-section {
+    background: rgba(33, 38, 45, 0.6);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(88, 166, 255, 0.15);
+}
+
+.header {
+    background: rgba(22, 27, 34, 0.95);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+}
+
+/* ENHANCEMENT 2: Advanced Hover Animations
+   Smooth 3D transforms and micro-interactions */
+
+.btn-icon,
+.btn-small,
+.btn-preset,
+.cue-btn,
+.btn-track-action {
+    transform-style: preserve-3d;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.btn-icon:hover {
+    transform: translateY(-3px) scale(1.05);
+    box-shadow: 0 8px 16px rgba(88, 166, 255, 0.3);
+}
+
+.library-track-card:hover {
+    transform: translateY(-5px) rotateX(2deg);
+    box-shadow:
+        0 12px 30px rgba(88, 166, 255, 0.4),
+        0 0 20px rgba(88, 166, 255, 0.2);
+}
+
+.deck:hover {
+    transform: scale(1.02);
+    box-shadow:
+        0 8px 24px rgba(88, 166, 255, 0.3),
+        0 0 15px rgba(88, 166, 255, 0.15);
+}
+
+.btn-preset:hover {
+    transform: translateY(-4px) scale(1.05);
+    box-shadow: 0 10px 25px rgba(88, 166, 255, 0.5);
+}
+
+.genre-filter-btn:hover {
+    transform: translateY(-2px);
+}
+
+/* Button press effect */
+.btn-icon:active,
+.btn-small:active,
+.btn-preset:active {
+    transform: translateY(0) scale(0.98);
+}
+
+/* ENHANCEMENT 3: Neon Glow Effects
+   Electric neon glows for active states */
+
+@keyframes neon-pulse {
+    0%, 100% {
+        box-shadow:
+            0 0 5px var(--neon-blue),
+            0 0 10px var(--neon-blue),
+            0 0 15px var(--neon-blue),
+            0 0 20px var(--accent-primary);
+    }
+    50% {
+        box-shadow:
+            0 0 10px var(--neon-blue),
+            0 0 20px var(--neon-blue),
+            0 0 30px var(--neon-blue),
+            0 0 40px var(--accent-primary);
+    }
+}
+
+@keyframes neon-pulse-purple {
+    0%, 100% {
+        box-shadow:
+            0 0 5px var(--neon-purple),
+            0 0 10px var(--neon-purple),
+            0 0 15px var(--neon-purple);
+    }
+    50% {
+        box-shadow:
+            0 0 10px var(--neon-purple),
+            0 0 20px var(--neon-purple),
+            0 0 30px var(--neon-purple);
+    }
+}
+
+.btn-icon.active,
+.genre-filter-btn.active,
+.view-toggle.active {
+    animation: neon-pulse 2s ease-in-out infinite;
+}
+
+.cue-btn.active {
+    animation: neon-pulse-purple 1.5s ease-in-out infinite;
+    border: 2px solid var(--neon-purple);
+}
+
+.deck-btn-play.playing {
+    animation: neon-pulse 2s ease-in-out infinite;
+}
+
+/* Neon text glow */
+.bpm-value,
+.pitch-value {
+    text-shadow:
+        0 0 5px var(--accent-primary),
+        0 0 10px var(--accent-primary),
+        0 0 15px var(--accent-primary);
+}
+
+/* ENHANCEMENT 4: Pulsing Beat Indicators
+   Rhythmic animations synced to BPM */
+
+@keyframes beat-pulse {
+    0% {
+        transform: scale(1);
+        opacity: 1;
+    }
+    15% {
+        transform: scale(1.2);
+        opacity: 0.8;
+    }
+    30% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+@keyframes beat-ring {
+    0% {
+        transform: scale(1);
+        opacity: 0.8;
+    }
+    100% {
+        transform: scale(2);
+        opacity: 0;
+    }
+}
+
+.bpm-display {
+    position: relative;
+}
+
+.bpm-display::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 80%;
+    height: 80%;
+    background: radial-gradient(circle, rgba(88, 166, 255, 0.3), transparent);
+    border-radius: 50%;
+    animation: beat-pulse 1s ease-in-out infinite;
+    pointer-events: none;
+}
+
+.track-bpm-badge {
+    position: relative;
+    overflow: visible;
+}
+
+.track-bpm-badge::after {
+    content: '';
+    position: absolute;
+    inset: -2px;
+    border-radius: 4px;
+    border: 2px solid rgba(16, 185, 129, 0.5);
+    animation: beat-ring 1.5s ease-out infinite;
+    pointer-events: none;
+}
+
+/* VU Meter pulse */
+.vu-meter-bar {
+    animation: meter-pulse 0.5s ease-in-out infinite;
+}
+
+/* ENHANCEMENT 5: Gradient Text Effects
+   Beautiful gradient text for headers */
+
+.logo h1 {
+    background: linear-gradient(135deg, var(--neon-blue), var(--neon-purple), var(--neon-pink));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    background-size: 200% 200%;
+    animation: gradient-shift 5s ease infinite;
+}
+
+@keyframes gradient-shift {
+    0%, 100% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+}
+
+.library-header h2,
+.sidebar-section h3 {
+    background: linear-gradient(90deg, var(--accent-primary), var(--neon-purple));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.track-card-title {
+    background: linear-gradient(135deg, var(--text-primary), var(--accent-primary));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    transition: all 0.3s;
+}
+
+.library-track-card:hover .track-card-title {
+    background: linear-gradient(135deg, var(--neon-blue), var(--neon-purple));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+/* ENHANCEMENT 6: Enhanced Particle Visualizer
+   Dynamic particle system for visualizer */
+
+@keyframes particle-float {
+    0% {
+        transform: translate(0, 0) scale(1);
+        opacity: 0;
+    }
+    10% {
+        opacity: 1;
+    }
+    90% {
+        opacity: 1;
+    }
+    100% {
+        transform: translate(var(--tx), var(--ty)) scale(0);
+        opacity: 0;
+    }
+}
+
+.visualizer-particle {
+    position: absolute;
+    width: 4px;
+    height: 4px;
+    background: radial-gradient(circle, var(--accent-primary), transparent);
+    border-radius: 50%;
+    pointer-events: none;
+    animation: particle-float 3s ease-out forwards;
+}
+
+/* Visualizer glow effect */
+#visualizer {
+    box-shadow:
+        inset 0 0 30px rgba(88, 166, 255, 0.1),
+        0 0 20px rgba(88, 166, 255, 0.05);
+    border: 1px solid rgba(88, 166, 255, 0.2);
+}
+
+/* Waveform glow */
+.waveform-canvas {
+    filter: drop-shadow(0 0 10px rgba(88, 166, 255, 0.4));
+}
+
+/* ENHANCEMENT 7: Smooth Scroll Animations
+   Buttery smooth scrolling with momentum */
+
+.playlist,
+.library-grid,
+.library-content,
+.modal-content {
+    scroll-behavior: smooth;
+    scrollbar-width: thin;
+    scrollbar-color: var(--accent-primary) var(--bg-tertiary);
+}
+
+/* Custom scrollbar */
+.playlist::-webkit-scrollbar,
+.library-grid::-webkit-scrollbar,
+.library-content::-webkit-scrollbar,
+.modal-content::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+.playlist::-webkit-scrollbar-track,
+.library-grid::-webkit-scrollbar-track,
+.library-content::-webkit-scrollbar-track,
+.modal-content::-webkit-scrollbar-track {
+    background: var(--bg-tertiary);
+    border-radius: 4px;
+}
+
+.playlist::-webkit-scrollbar-thumb,
+.library-grid::-webkit-scrollbar-thumb,
+.library-content::-webkit-scrollbar-thumb,
+.modal-content::-webkit-scrollbar-thumb {
+    background: linear-gradient(135deg, var(--accent-primary), var(--neon-purple));
+    border-radius: 4px;
+    border: 2px solid var(--bg-tertiary);
+}
+
+.playlist::-webkit-scrollbar-thumb:hover,
+.library-grid::-webkit-scrollbar-thumb:hover,
+.library-content::-webkit-scrollbar-thumb:hover,
+.modal-content::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(135deg, var(--neon-blue), var(--neon-purple));
+}
+
+/* Fade in animation for scroll items */
+@keyframes fade-in-up {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.library-track-card {
+    animation: fade-in-up 0.5s ease-out backwards;
+}
+
+.library-track-card:nth-child(1) { animation-delay: 0.05s; }
+.library-track-card:nth-child(2) { animation-delay: 0.1s; }
+.library-track-card:nth-child(3) { animation-delay: 0.15s; }
+.library-track-card:nth-child(4) { animation-delay: 0.2s; }
+.library-track-card:nth-child(5) { animation-delay: 0.25s; }
+.library-track-card:nth-child(6) { animation-delay: 0.3s; }
+.library-track-card:nth-child(7) { animation-delay: 0.35s; }
+.library-track-card:nth-child(8) { animation-delay: 0.4s; }
+
+/* ENHANCEMENT 8: Loading Skeleton Screens
+   Professional loading states */
+
+@keyframes skeleton-loading {
+    0% {
+        background-position: -200px 0;
+    }
+    100% {
+        background-position: calc(200px + 100%) 0;
+    }
+}
+
+.skeleton {
+    background: linear-gradient(
+        90deg,
+        var(--bg-tertiary) 0%,
+        var(--bg-overlay) 50%,
+        var(--bg-tertiary) 100%
+    );
+    background-size: 200px 100%;
+    animation: skeleton-loading 1.5s ease-in-out infinite;
+    border-radius: 4px;
+}
+
+.skeleton-track-card {
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-primary);
+    border-radius: 8px;
+    padding: 15px;
+    height: 160px;
+}
+
+.skeleton-header {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 12px;
+}
+
+.skeleton-badge {
+    width: 60px;
+    height: 20px;
+}
+
+.skeleton-title {
+    width: 80%;
+    height: 20px;
+    margin-bottom: 8px;
+}
+
+.skeleton-artist {
+    width: 60%;
+    height: 16px;
+    margin-bottom: 12px;
+}
+
+.skeleton-actions {
+    display: flex;
+    gap: 8px;
+    justify-content: flex-end;
+}
+
+.skeleton-button {
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
+}
+
+/* Loading spinner */
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+.loading-spinner {
+    display: inline-block;
+    width: 40px;
+    height: 40px;
+    border: 4px solid var(--bg-overlay);
+    border-top-color: var(--accent-primary);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+/* Progress bar shimmer */
+.progress-bar {
+    position: relative;
+    overflow: hidden;
+}
+
+.progress-bar::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(255, 255, 255, 0.3),
+        transparent
+    );
+    animation: shimmer 2s infinite;
+}
+
+@keyframes shimmer {
+    to {
+        left: 100%;
+    }
+}
+
+/* BONUS: Enhanced Focus States for Accessibility */
+
+.btn-icon:focus-visible,
+.btn-small:focus-visible,
+.btn-preset:focus-visible,
+.genre-filter-btn:focus-visible {
+    outline: 2px solid var(--accent-primary);
+    outline-offset: 2px;
+    box-shadow: 0 0 0 4px rgba(88, 166, 255, 0.2);
+}
+
+/* BONUS: Ripple Effect on Click */
+
+@keyframes ripple {
+    to {
+        transform: scale(4);
+        opacity: 0;
+    }
+}
+
+.btn-icon,
+.btn-small,
+.btn-preset {
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-icon::after,
+.btn-small::after,
+.btn-preset::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: rgba(88, 166, 255, 0.5);
+    transform: translate(-50%, -50%);
+    transition: width 0.6s, height 0.6s;
+}
+
+.btn-icon:active::after,
+.btn-small:active::after,
+.btn-preset:active::after {
+    width: 100px;
+    height: 100px;
+    opacity: 0;
+    transition: 0s;
+}
+
+/* BONUS: Smooth Modal Transitions */
+
+.modal {
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.modal.active {
+    animation: modal-fade-in 0.3s ease-out;
+}
+
+@keyframes modal-fade-in {
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.modal-content {
+    animation: modal-slide-up 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes modal-slide-up {
+    from {
+        transform: translateY(50px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+/* Enhanced deck animations */
+@keyframes deck-appear {
+    from {
+        opacity: 0;
+        transform: scale(0.9) rotateX(-10deg);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1) rotateX(0);
+    }
+}
+
+.deck {
+    animation: deck-appear 0.5s cubic-bezier(0.4, 0, 0.2, 1) backwards;
+}
+
+#deckA { animation-delay: 0.1s; }
+#deckB { animation-delay: 0.2s; }
+#deckC { animation-delay: 0.3s; }
+#deckD { animation-delay: 0.4s; }
