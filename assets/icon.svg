@@ -1,0 +1,74 @@
+<svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background gradient circle -->
+  <defs>
+    <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#00d4ff;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#a855f7;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#ec4899;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="glowGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#58a6ff;stop-opacity:0.8" />
+      <stop offset="100%" style="stop-color:#a855f7;stop-opacity:0.8" />
+    </linearGradient>
+
+    <!-- Glow filter -->
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="4" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- Dark background -->
+  <circle cx="256" cy="256" r="256" fill="#0d1117"/>
+
+  <!-- Outer glow ring -->
+  <circle cx="256" cy="256" r="220" fill="none" stroke="url(#bgGradient)" stroke-width="8" opacity="0.3"/>
+
+  <!-- Main DJ turntable circle -->
+  <circle cx="256" cy="256" r="180" fill="#161b22" stroke="url(#bgGradient)" stroke-width="4"/>
+
+  <!-- Vinyl grooves -->
+  <circle cx="256" cy="256" r="160" fill="none" stroke="#21262d" stroke-width="2"/>
+  <circle cx="256" cy="256" r="140" fill="none" stroke="#21262d" stroke-width="2"/>
+  <circle cx="256" cy="256" r="120" fill="none" stroke="#21262d" stroke-width="2"/>
+  <circle cx="256" cy="256" r="100" fill="none" stroke="#21262d" stroke-width="2"/>
+
+  <!-- Center label -->
+  <circle cx="256" cy="256" r="80" fill="url(#bgGradient)" filter="url(#glow)"/>
+
+  <!-- Play button triangle -->
+  <path d="M 236 226 L 236 286 L 286 256 Z" fill="#0d1117" opacity="0.9"/>
+
+  <!-- DJ waveform lines (left side) -->
+  <g opacity="0.8" fill="url(#glowGradient)">
+    <rect x="80" y="240" width="60" height="8" rx="4"/>
+    <rect x="80" y="260" width="50" height="6" rx="3"/>
+    <rect x="80" y="275" width="55" height="7" rx="3.5"/>
+  </g>
+
+  <!-- DJ waveform lines (right side) -->
+  <g opacity="0.8" fill="url(#glowGradient)">
+    <rect x="372" y="240" width="60" height="8" rx="4"/>
+    <rect x="382" y="260" width="50" height="6" rx="3"/>
+    <rect x="377" y="275" width="55" height="7" rx="3.5"/>
+  </g>
+
+  <!-- Headphones (top) -->
+  <g stroke="url(#bgGradient)" stroke-width="6" fill="none" stroke-linecap="round">
+    <path d="M 180 120 Q 256 80, 332 120"/>
+    <rect x="165" y="115" width="30" height="40" rx="8" fill="#161b22"/>
+    <rect x="317" y="115" width="30" height="40" rx="8" fill="#161b22"/>
+  </g>
+
+  <!-- Neon glow effects -->
+  <circle cx="256" cy="256" r="185" fill="none" stroke="url(#bgGradient)" stroke-width="2" opacity="0.6" filter="url(#glow)"/>
+
+  <!-- Corner accent lights -->
+  <circle cx="100" cy="412" r="8" fill="#00d4ff" opacity="0.6" filter="url(#glow)"/>
+  <circle cx="412" cy="412" r="8" fill="#ec4899" opacity="0.6" filter="url(#glow)"/>
+  <circle cx="100" cy="100" r="8" fill="#a855f7" opacity="0.6" filter="url(#glow)"/>
+  <circle cx="412" cy="100" r="8" fill="#00d4ff" opacity="0.6" filter="url(#glow)"/>
+</svg>

@@ -1,12 +1,80 @@
 {
-  "name": "coremedia",
+  "name": "coremedia-dj",
+  "productName": "CoreMedia DJ",
   "version": "1.0.0",
-  "description": "Professional media player with advanced features",
-  "main": "index.html",
+  "description": "Professional DJ and Media Player for Ubuntu/KDE",
+  "main": "main.js",
   "scripts": {
-    "start": "npx http-server -p 8080"
+    "start": "electron .",
+    "dev": "NODE_ENV=development electron .",
+    "build": "electron-builder --linux deb",
+    "pack": "electron-builder --linux --dir",
+    "web": "npx http-server -p 8080"
   },
-  "keywords": ["media", "player", "video", "audio"],
-  "author": "",
-  "license": "MIT"
+  "keywords": [
+    "media",
+    "player",
+    "dj",
+    "music",
+    "video",
+    "audio",
+    "mixer"
+  ],
+  "author": {
+    "name": "CoreMedia",
+    "email": "support@coremedia.local"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "electron-squirrel-startup": "^1.0.1"
+  },
+  "devDependencies": {
+    "electron": "^28.3.3",
+    "electron-builder": "^24.13.3",
+    "sharp": "^0.34.5"
+  },
+  "build": {
+    "appId": "com.coremedia.dj",
+    "productName": "CoreMedia DJ",
+    "linux": {
+      "target": [
+        {
+          "target": "deb",
+          "arch": [
+            "x64",
+            "arm64"
+          ]
+        }
+      ],
+      "category": "AudioVideo",
+      "desktop": {
+        "Name": "CoreMedia DJ",
+        "Comment": "Professional DJ and Media Player",
+        "GenericName": "Media Player",
+        "Keywords": "Audio;Video;Player;DJ;Music;Mixer;",
+        "Categories": "AudioVideo;Audio;Video;Player;",
+        "StartupWMClass": "CoreMedia DJ",
+        "MimeType": "audio/mpeg;audio/x-mp3;audio/mp3;audio/x-wav;audio/ogg;audio/x-vorbis+ogg;audio/x-flac;video/mp4;video/webm;video/ogg;",
+        "Terminal": false
+      },
+      "icon": "assets/icon.png",
+      "synopsis": "Professional DJ and Media Player",
+      "description": "CoreMedia DJ is a professional media player with advanced DJ features including multi-deck mixing, beat synchronization, audio effects, and comprehensive music library management."
+    },
+    "files": [
+      "**/*",
+      "!**/*.md",
+      "!.git",
+      "!.gitignore",
+      "!README.md",
+      "!FEATURES.md",
+      "!COMPLETE_GUIDE.md",
+      "!NEW_FEATURES.md",
+      "!VISUAL_GUIDE.md",
+      "!ADVANCED_FEATURES.md",
+      "!ENHANCEMENTS.md",
+      "!MUSIC_LIBRARY_GUIDE.md",
+      "!STYLING_ENHANCEMENTS.md"
+    ]
+  }
 }

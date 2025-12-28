@@ -131,6 +131,7 @@ body {
 .sidebar-section {
     padding: 16px;
     border-bottom: 1px solid var(--border-primary);
+    /* Glassmorphism applied in Enhancement 1 below */
 }
 
 .sidebar-section h3 {
@@ -698,12 +699,10 @@ body {
 }
 
 .modal-content {
-    background: var(--bg-secondary);
-    border: 1px solid var(--border-primary);
     border-radius: 8px;
     padding: 24px;
     min-width: 400px;
-    box-shadow: 0 16px 48px var(--shadow);
+    /* Glassmorphism background, border, and shadow applied in Enhancement 1 below */
 }
 
 .modal-content h2 {
@@ -1850,11 +1849,9 @@ body {
 .deck {
     display: flex;
     flex-direction: column;
-    background: var(--bg-secondary);
-    border: 2px solid rgba(88, 166, 255, 0.3);
     border-radius: 12px;
     overflow: hidden;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
+    /* Glassmorphism background, border, and shadow applied in Enhancement 1 below */
 }
 
 .deck-hidden {
@@ -2005,12 +2002,10 @@ body {
 
 /* DJ Mixer Section */
 .dj-mixer {
-    background: linear-gradient(135deg, #161b22, #21262d);
-    border: 2px solid rgba(88, 166, 255, 0.3);
     border-radius: 12px;
     padding: 20px;
     margin: 20px 0;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+    /* Glassmorphism background, border, and shadow applied in Enhancement 1 below */
 }
 
 .mixer-row {
