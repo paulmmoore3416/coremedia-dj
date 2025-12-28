@@ -127,6 +127,13 @@ class CoreMedia {
         this.initMultiDeck();
         this.initPerformanceOptimizations();
         this.initMusicLibrary();
+
+        // Layout Enhancements
+        this.initCollapsiblePanels();
+        this.initPictureInPicture();
+        this.initSplitScreen();
+        this.initFloatingWidgets();
+        this.initDensityControls();
     }
 
     initElements() {
@@ -4204,6 +4211,328 @@ class CoreMedia {
         });
 
         input.click();
+    }
+
+    // ====================================================================
+    // LAYOUT ENHANCEMENT METHODS
+    // ====================================================================
+
+    // Enhancement 2: Collapsible Panel System
+    initCollapsiblePanels() {
+        // Make sidebar sections collapsible
+        const sidebarSections = document.querySelectorAll('.sidebar-section');
+        sidebarSections.forEach((section, index) => {
+            // Skip if already converted to collapsible
+            if (section.classList.contains('collapsible-section')) return;
+
+            // Get the section title
+            const titleElement = section.querySelector('.section-title');
+            if (!titleElement) return;
+
+            // Wrap the section in collapsible structure
+            section.classList.add('collapsible-section');
+
+            // Create header
+            const header = document.createElement('div');
+            header.className = 'collapsible-header';
+
+            const title = document.createElement('div');
+            title.className = 'collapsible-title';
+            title.innerHTML = titleElement.innerHTML;
+
+            const toggle = document.createElement('span');
+            toggle.className = 'collapsible-toggle';
+            toggle.innerHTML = '▼';
+
+            header.appendChild(title);
+            header.appendChild(toggle);
+
+            // Create content wrapper
+            const content = document.createElement('div');
+            content.className = 'collapsible-content';
+
+            // Move all children except title into content
+            const children = Array.from(section.children);
+            children.forEach(child => {
+                if (child !== titleElement) {
+                    content.appendChild(child);
+                }
+            });
+
+            // Remove old title
+            titleElement.remove();
+
+            // Add header and content
+            section.insertBefore(header, section.firstChild);
+            section.appendChild(content);
+
+            // Add click handler
+            header.addEventListener('click', () => {
+                section.classList.toggle('collapsed');
+            });
+        });
+    }
+
+    // Enhancement 3: Picture-in-Picture Mode
+    initPictureInPicture() {
+        const pipToggleBtn = document.getElementById('pipToggleBtn');
+        const pipContainer = document.getElementById('pipContainer');
+        const pipVideo = document.getElementById('pipVideo');
+        const pipAudio = document.getElementById('pipAudio');
+        const pipPlayBtn = document.getElementById('pipPlayBtn');
+        const pipCloseBtn = document.getElementById('pipCloseBtn');
+        const pipDragHandle = pipContainer.querySelector('.pip-drag-handle');
+
+        let isPipActive = false;
+        let isDragging = false;
+        let dragOffset = { x: 0, y: 0 };
+
+        // Toggle PiP mode
+        pipToggleBtn.addEventListener('click', () => {
+            isPipActive = !isPipActive;
+            pipContainer.classList.toggle('active', isPipActive);
+
+            if (isPipActive) {
+                // Clone current media to PiP
+                if (this.videoPlayer.src) {
+                    pipVideo.src = this.videoPlayer.src;
+                    pipVideo.currentTime = this.videoPlayer.currentTime;
+                    pipVideo.style.display = 'block';
+                    pipAudio.style.display = 'none';
+                } else if (this.audioPlayer.src) {
+                    pipAudio.src = this.audioPlayer.src;
+                    pipAudio.currentTime = this.audioPlayer.currentTime;
+                    pipVideo.style.display = 'none';
+                    pipAudio.style.display = 'block';
+                }
+            } else {
+                pipVideo.pause();
+                pipAudio.pause();
+                pipVideo.src = '';
+                pipAudio.src = '';
+            }
+        });
+
+        // PiP play/pause
+        pipPlayBtn.addEventListener('click', () => {
+            const activeMedia = pipVideo.style.display !== 'none' ? pipVideo : pipAudio;
+            if (activeMedia.paused) {
+                activeMedia.play();
+                pipPlayBtn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>';
+            } else {
+                activeMedia.pause();
+                pipPlayBtn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>';
+            }
+        });
+
+        // Close PiP
+        pipCloseBtn.addEventListener('click', () => {
+            isPipActive = false;
+            pipContainer.classList.remove('active');
+            pipVideo.pause();
+            pipAudio.pause();
+            pipVideo.src = '';
+            pipAudio.src = '';
+        });
+
+        // Dragging functionality
+        pipDragHandle.addEventListener('mousedown', (e) => {
+            isDragging = true;
+            const rect = pipContainer.getBoundingClientRect();
+            dragOffset.x = e.clientX - rect.left;
+            dragOffset.y = e.clientY - rect.top;
+            pipContainer.style.transition = 'none';
+        });
+
+        document.addEventListener('mousemove', (e) => {
+            if (!isDragging) return;
+
+            const x = e.clientX - dragOffset.x;
+            const y = e.clientY - dragOffset.y;
+
+            pipContainer.style.left = `${x}px`;
+            pipContainer.style.bottom = 'auto';
+            pipContainer.style.right = 'auto';
+            pipContainer.style.top = `${y}px`;
+        });
+
+        document.addEventListener('mouseup', () => {
+            if (isDragging) {
+                isDragging = false;
+                pipContainer.style.transition = '';
+            }
+        });
+    }
+
+    // Enhancement 4: Split-Screen Comparison View
+    initSplitScreen() {
+        const splitViewBtn = document.getElementById('splitViewBtn');
+        const splitContainer = document.getElementById('splitScreenContainer');
+        const videoContainer = document.querySelector('.video-container');
+        const mainContent = document.querySelector('.main-content');
+
+        let isSplitActive = false;
+
+        splitViewBtn.addEventListener('click', () => {
+            isSplitActive = !isSplitActive;
+            splitContainer.classList.toggle('active', isSplitActive);
+
+            if (isSplitActive) {
+                videoContainer.style.display = 'none';
+                mainContent.appendChild(splitContainer);
+            } else {
+                videoContainer.style.display = 'flex';
+            }
+        });
+
+        // Split divider dragging
+        const divider = document.getElementById('splitDivider');
+        let isDragging = false;
+
+        divider.addEventListener('mousedown', () => {
+            isDragging = true;
+        });
+
+        document.addEventListener('mousemove', (e) => {
+            if (!isDragging) return;
+
+            const rect = splitContainer.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const percentage = (x / rect.width) * 100;
+
+            if (percentage > 10 && percentage < 90) {
+                splitContainer.style.gridTemplateColumns = `${percentage}% ${100 - percentage}%`;
+            }
+        });
+
+        document.addEventListener('mouseup', () => {
+            isDragging = false;
+        });
+    }
+
+    // Enhancement 5: Floating Widget System
+    initFloatingWidgets() {
+        const widgets = document.querySelectorAll('.floating-widget');
+
+        widgets.forEach(widget => {
+            const header = widget.querySelector('.widget-header');
+            const closeBtn = widget.querySelector('.widget-btn');
+            const resizeHandle = widget.querySelector('.widget-resize-handle');
+
+            let isDragging = false;
+            let isResizing = false;
+            let dragOffset = { x: 0, y: 0 };
+            let startSize = { width: 0, height: 0 };
+            let startPos = { x: 0, y: 0 };
+
+            // Close button
+            if (closeBtn) {
+                closeBtn.addEventListener('click', () => {
+                    widget.classList.remove('active');
+                });
+            }
+
+            // Dragging
+            header.addEventListener('mousedown', (e) => {
+                if (e.target.closest('.widget-btn')) return;
+
+                isDragging = true;
+                const rect = widget.getBoundingClientRect();
+                dragOffset.x = e.clientX - rect.left;
+                dragOffset.y = e.clientY - rect.top;
+
+                // Remove position classes
+                widget.classList.remove('top-left', 'top-right', 'bottom-left', 'bottom-right', 'center');
+            });
+
+            // Resizing
+            if (resizeHandle) {
+                resizeHandle.addEventListener('mousedown', (e) => {
+                    e.stopPropagation();
+                    isResizing = true;
+                    startSize.width = widget.offsetWidth;
+                    startSize.height = widget.offsetHeight;
+                    startPos.x = e.clientX;
+                    startPos.y = e.clientY;
+                });
+            }
+
+            document.addEventListener('mousemove', (e) => {
+                if (isDragging) {
+                    widget.style.left = `${e.clientX - dragOffset.x}px`;
+                    widget.style.top = `${e.clientY - dragOffset.y}px`;
+                    widget.style.right = 'auto';
+                    widget.style.bottom = 'auto';
+                    widget.style.transform = 'none';
+                }
+
+                if (isResizing) {
+                    const newWidth = startSize.width + (e.clientX - startPos.x);
+                    const newHeight = startSize.height + (e.clientY - startPos.y);
+
+                    if (newWidth > 200) widget.style.width = `${newWidth}px`;
+                    if (newHeight > 100) widget.style.height = `${newHeight}px`;
+                }
+            });
+
+            document.addEventListener('mouseup', () => {
+                isDragging = false;
+                isResizing = false;
+            });
+        });
+
+        // Add keyboard shortcuts to toggle widgets
+        document.addEventListener('keydown', (e) => {
+            if (e.ctrlKey && e.shiftKey) {
+                if (e.key === 'V') {
+                    // Toggle VU widget
+                    const vuWidget = document.getElementById('vuWidget');
+                    vuWidget.classList.toggle('active');
+                    e.preventDefault();
+                } else if (e.key === 'W') {
+                    // Toggle Waveform widget
+                    const waveWidget = document.getElementById('waveformWidget');
+                    waveWidget.classList.toggle('active');
+                    e.preventDefault();
+                }
+            }
+        });
+    }
+
+    // Enhancement 6: Adaptive Spacing & Density Controls
+    initDensityControls() {
+        // Add density control to settings modal
+        const settingsContent = document.querySelector('#settingsModal .modal-body');
+
+        if (settingsContent) {
+            const densityControl = document.createElement('div');
+            densityControl.className = 'setting-item';
+            densityControl.innerHTML = `
+                <label>UI Density</label>
+                <select id="densitySelect" class="setting-select">
+                    <option value="compact">Compact</option>
+                    <option value="comfortable" selected>Comfortable</option>
+                    <option value="spacious">Spacious</option>
+                </select>
+            `;
+            settingsContent.appendChild(densityControl);
+
+            const densitySelect = densityControl.querySelector('#densitySelect');
+
+            // Load saved density
+            const savedDensity = localStorage.getItem('uiDensity') || 'comfortable';
+            densitySelect.value = savedDensity;
+            document.body.className = document.body.className.replace(/density-\w+/g, '');
+            document.body.classList.add(`density-${savedDensity}`);
+
+            // Handle density change
+            densitySelect.addEventListener('change', (e) => {
+                const density = e.target.value;
+                document.body.className = document.body.className.replace(/density-\w+/g, '');
+                document.body.classList.add(`density-${density}`);
+                localStorage.setItem('uiDensity', density);
+            });
+        }
     }
 }
 

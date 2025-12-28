@@ -1,8 +1,9 @@
-# CoreMedia - Professional DJ & Media Player
+# CoreMedia DJ - Professional DJ & Media Player
 
-![CoreMedia](https://img.shields.io/badge/CoreMedia-v2.0-00d4ff?style=for-the-badge)
+![CoreMedia](https://img.shields.io/badge/CoreMedia-v1.1.0-00d4ff?style=for-the-badge)
 ![License](https://img.shields.io/badge/License-MIT-a855f7?style=for-the-badge)
 ![Status](https://img.shields.io/badge/Status-Active-4ade80?style=for-the-badge)
+![Platform](https://img.shields.io/badge/Platform-Linux%20|%20Web-ec4899?style=for-the-badge)
 
 A professional-grade DJ application and media player built with modern web technologies. Transform your browser into a complete DJ workstation with multi-deck mixing, effects, and advanced audio processing.
 
@@ -11,6 +12,42 @@ A professional-grade DJ application and media player built with modern web techn
 **[🚀 Launch CoreMedia DJ](https://paulmmoore3416.github.io/coremedia-dj/)**
 
 No installation required - runs entirely in your browser!
+
+## 📦 Download & Install
+
+### Desktop Application (Ubuntu/Debian)
+
+Download the latest `.deb` package for a native desktop experience:
+
+**[⬇️ Download CoreMedia DJ v1.1.0 (.deb)](https://github.com/paulmmoore3416/coremedia-dj/releases/latest/download/coremedia-dj_1.1.0_amd64.deb)**
+
+```bash
+# Install the downloaded package
+sudo dpkg -i coremedia-dj_1.1.0_amd64.deb
+
+# Fix any dependency issues
+sudo apt-get install -f -y
+
+# Launch from terminal
+coremedia-dj
+
+# Or search for "CoreMedia DJ" in your application menu
+```
+
+### Quick Install Script
+
+```bash
+# Clone the repository
+git clone https://github.com/paulmmoore3416/coremedia-dj.git
+cd coremedia-dj
+
+# Run the installation script
+./INSTALL.sh
+```
+
+### Web Version
+
+No installation needed - just visit the [Live Demo](https://paulmmoore3416.github.io/coremedia-dj/) in your browser!
 
 ## Features
 
@@ -75,10 +112,22 @@ No installation required - runs entirely in your browser!
 - Lazy loading with requestIdleCallback
 - Aggressive memory cleanup (every 30s)
 
+### 🎨 Layout Enhancements (NEW in v1.1.0!)
+
+- **Responsive Grid Layout**: Auto-flowing CSS Grid with breakpoints and aspect ratio control
+- **Collapsible Panels**: Expandable/collapsible sidebar sections with smooth animations
+- **Picture-in-Picture Mode**: Draggable floating mini player for multitasking
+- **Split-Screen View**: Side-by-side dual video/audio comparison with resizable divider
+- **Floating Widgets**: Draggable, resizable overlay widgets (VU Meters, Waveform)
+  - Keyboard shortcuts: `Ctrl+Shift+V` (VU), `Ctrl+Shift+W` (Waveform)
+- **Adaptive Density Controls**: User-adjustable UI spacing (Compact/Comfortable/Spacious)
+  - Settings persist across sessions in localStorage
+
 ### Professional UI
 
 - GitHub gray theme with neon accents
-- Responsive design
+- Glassmorphism effects with backdrop blur
+- Responsive design for all screen sizes
 - Auto-hiding controls
 - Smooth transitions and glow animations
 - Professional icons and layout

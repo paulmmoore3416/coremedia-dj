@@ -19,7 +19,7 @@ fi
 
 # Get the directory where the script is located
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-DEB_FILE="$SCRIPT_DIR/dist/coremedia-dj_1.0.0_amd64.deb"
+DEB_FILE="$SCRIPT_DIR/dist/coremedia-dj_1.1.0_amd64.deb"
 
 # Check if .deb file exists
 if [ ! -f "$DEB_FILE" ]; then
@@ -50,7 +50,7 @@ echo "  3. Press Alt+F2 and type: coremedia-dj"
 echo ""
 echo "Package Details:"
 echo "  - Name: CoreMedia DJ"
-echo "  - Version: 1.0.0"
+echo "  - Version: 1.1.0"
 echo "  - Size: $(du -h "$DEB_FILE" | cut -f1)"
 echo "  - Installed to: /opt/CoreMedia DJ/"
 echo ""

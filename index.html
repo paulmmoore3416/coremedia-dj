@@ -49,6 +49,18 @@
                         <rect x="14" y="14" width="7" height="7"/>
                     </svg>
                 </button>
+                <button class="btn-icon" id="pipToggleBtn" title="Picture-in-Picture">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="3" width="18" height="14" rx="2"/>
+                        <rect x="13" y="11" width="6" height="4" rx="1" fill="currentColor"/>
+                    </svg>
+                </button>
+                <button class="btn-icon" id="splitViewBtn" title="Split Screen View">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="3" width="8" height="18" rx="1"/>
+                        <rect x="13" y="3" width="8" height="18" rx="1"/>
+                    </svg>
+                </button>
             </div>
         </header>
 
@@ -1061,6 +1073,81 @@
     <input type="file" id="fileInput" accept="video/*,audio/*" multiple style="display:none;">
     <input type="file" id="subtitleInput" accept=".srt,.vtt,.ass" style="display:none;">
     <input type="file" id="libraryFolderInput" webkitdirectory directory multiple style="display:none;">
+
+    <!-- Picture-in-Picture Container -->
+    <div class="pip-container" id="pipContainer">
+        <div class="pip-drag-handle">
+            <div class="pip-drag-indicator"></div>
+        </div>
+        <video class="pip-video" id="pipVideo"></video>
+        <audio class="pip-video" id="pipAudio"></audio>
+        <div class="pip-controls">
+            <button class="pip-btn" id="pipPlayBtn">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M8 5v14l11-7z"/>
+                </svg>
+            </button>
+            <button class="pip-btn" id="pipCloseBtn">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M18 6L6 18M6 6l12 12"/>
+                </svg>
+            </button>
+        </div>
+    </div>
+
+    <!-- Split Screen Container -->
+    <div class="split-screen-container" id="splitScreenContainer">
+        <div class="split-pane split-pane-left">
+            <div class="split-pane-label">DECK A</div>
+            <video class="split-video" id="splitVideoLeft"></video>
+            <audio class="split-video" id="splitAudioLeft"></audio>
+        </div>
+        <div class="split-pane split-pane-right">
+            <div class="split-pane-label">DECK B</div>
+            <video class="split-video" id="splitVideoRight"></video>
+            <audio class="split-video" id="splitAudioRight"></audio>
+        </div>
+        <div class="split-divider" id="splitDivider"></div>
+    </div>
+
+    <!-- Floating Widgets (Example: VU Meter Widget) -->
+    <div class="floating-widget bottom-left" id="vuWidget">
+        <div class="widget-header">
+            <div class="widget-title">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                    <rect x="3" y="3" width="7" height="18"/>
+                    <rect x="14" y="8" width="7" height="13"/>
+                </svg>
+                VU Meters
+            </div>
+            <div class="widget-actions">
+                <button class="widget-btn" id="vuWidgetClose">✕</button>
+            </div>
+        </div>
+        <div class="widget-content" id="vuWidgetContent">
+            <!-- VU meter content will be populated by JavaScript -->
+        </div>
+        <div class="widget-resize-handle"></div>
+    </div>
+
+    <!-- Floating Widget: Waveform Widget -->
+    <div class="floating-widget top-right" id="waveformWidget">
+        <div class="widget-header">
+            <div class="widget-title">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M12 2v20M6 6v12M18 8v8M3 10v4M21 10v4"/>
+                </svg>
+                Waveform
+            </div>
+            <div class="widget-actions">
+                <button class="widget-btn" id="waveformWidgetClose">✕</button>
+            </div>
+        </div>
+        <div class="widget-content" id="waveformWidgetContent">
+            <canvas id="widgetWaveformCanvas" style="width: 100%; height: 120px; background: #000;"></canvas>
+        </div>
+        <div class="widget-resize-handle"></div>
+    </div>
 
     <script src="app.js"></script>
 </body>

@@ -3447,4 +3447,585 @@ body {
 #deckA { animation-delay: 0.1s; }
 #deckB { animation-delay: 0.2s; }
 #deckC { animation-delay: 0.3s; }
+
+/* =================================================================
+   LAYOUT ENHANCEMENT 1: RESPONSIVE GRID LAYOUT SYSTEM
+   ================================================================= */
+
+/* Grid container for auto-flowing responsive layouts */
+.grid-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 16px;
+    padding: 16px;
+}
+
+/* Grid items with aspect ratio control */
+.grid-item {
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-primary);
+    border-radius: 8px;
+    padding: 16px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.grid-item:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+    border-color: var(--accent-primary);
+}
+
+/* Responsive breakpoint utilities */
+@media (min-width: 1400px) {
+    .grid-container { grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); }
+}
+
+@media (max-width: 768px) {
+    .grid-container {
+        grid-template-columns: 1fr;
+        gap: 12px;
+        padding: 12px;
+    }
+}
+
+/* Grid aspect ratio variants */
+.grid-item.square {
+    aspect-ratio: 1 / 1;
+}
+
+.grid-item.landscape {
+    aspect-ratio: 16 / 9;
+}
+
+.grid-item.portrait {
+    aspect-ratio: 9 / 16;
+}
+
+/* =================================================================
+   LAYOUT ENHANCEMENT 2: COLLAPSIBLE PANEL SYSTEM
+   ================================================================= */
+
+/* Collapsible section container */
+.collapsible-section {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-primary);
+    border-radius: 8px;
+    margin-bottom: 12px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.collapsible-section.collapsed {
+    border-color: var(--border-secondary);
+}
+
+/* Collapsible header */
+.collapsible-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 16px;
+    background: var(--bg-tertiary);
+    cursor: pointer;
+    user-select: none;
+    transition: all 0.2s;
+}
+
+.collapsible-header:hover {
+    background: var(--bg-overlay);
+}
+
+.collapsible-header:active {
+    transform: scale(0.98);
+}
+
+.collapsible-title {
+    font-weight: 600;
+    font-size: 14px;
+    color: var(--text-primary);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.collapsible-toggle {
+    color: var(--text-secondary);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    font-size: 16px;
+}
+
+.collapsible-section.collapsed .collapsible-toggle {
+    transform: rotate(-90deg);
+}
+
+/* Collapsible content with smooth animation */
+.collapsible-content {
+    max-height: 2000px;
+    overflow: hidden;
+    transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+                opacity 0.3s ease,
+                padding 0.3s ease;
+    padding: 16px;
+    opacity: 1;
+}
+
+.collapsible-section.collapsed .collapsible-content {
+    max-height: 0;
+    padding: 0 16px;
+    opacity: 0;
+}
+
+/* =================================================================
+   LAYOUT ENHANCEMENT 3: PICTURE-IN-PICTURE MODE
+   ================================================================= */
+
+/* PiP container */
+.pip-container {
+    position: fixed;
+    bottom: 80px;
+    right: 20px;
+    width: 360px;
+    height: 202px;
+    background: var(--bg-secondary);
+    border: 2px solid var(--accent-primary);
+    border-radius: 12px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5),
+                0 0 20px rgba(88, 166, 255, 0.2);
+    z-index: 9999;
+    overflow: hidden;
+    backdrop-filter: blur(20px);
+    display: none;
+    animation: pip-slide-in 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.pip-container.active {
+    display: block;
+}
+
+@keyframes pip-slide-in {
+    from {
+        transform: translateY(100px) scale(0.8);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0) scale(1);
+        opacity: 1;
+    }
+}
+
+/* PiP video/audio element */
+.pip-video {
+    width: 100%;
+    height: calc(100% - 40px);
+    object-fit: contain;
+    background: #000;
+}
+
+/* PiP controls bar */
+.pip-controls {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 40px;
+    background: linear-gradient(to top, rgba(13, 17, 23, 0.95), transparent);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 12px;
+    backdrop-filter: blur(10px);
+}
+
+.pip-btn {
+    background: transparent;
+    border: none;
+    color: var(--text-primary);
+    cursor: pointer;
+    padding: 6px;
+    border-radius: 4px;
+    transition: all 0.2s;
+}
+
+.pip-btn:hover {
+    background: rgba(88, 166, 255, 0.2);
+    color: var(--accent-primary);
+}
+
+/* PiP drag handle */
+.pip-drag-handle {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 30px;
+    cursor: move;
+    background: linear-gradient(to bottom, rgba(13, 17, 23, 0.8), transparent);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.2s;
+}
+
+.pip-container:hover .pip-drag-handle {
+    opacity: 1;
+}
+
+.pip-drag-indicator {
+    width: 40px;
+    height: 4px;
+    background: var(--text-tertiary);
+    border-radius: 2px;
+}
+
+/* =================================================================
+   LAYOUT ENHANCEMENT 4: SPLIT-SCREEN COMPARISON VIEW
+   ================================================================= */
+
+/* Split-screen container */
+.split-screen-container {
+    display: none;
+    grid-template-columns: 1fr 1fr;
+    gap: 2px;
+    height: 100%;
+    background: var(--border-primary);
+}
+
+.split-screen-container.active {
+    display: grid;
+}
+
+/* Split screen panes */
+.split-pane {
+    position: relative;
+    background: var(--bg-primary);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.split-pane-label {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    background: rgba(13, 17, 23, 0.85);
+    color: var(--accent-primary);
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--border-primary);
+    z-index: 10;
+}
+
+.split-pane-left .split-pane-label {
+    border-left: 3px solid var(--dj-red);
+}
+
+.split-pane-right .split-pane-label {
+    border-left: 3px solid var(--dj-green);
+}
+
+/* Split screen video/audio elements */
+.split-video {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    background: #000;
+}
+
+/* Vertical divider with drag handle */
+.split-divider {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 8px;
+    height: 100%;
+    background: var(--border-primary);
+    cursor: col-resize;
+    z-index: 100;
+    transition: background 0.2s;
+}
+
+.split-divider:hover {
+    background: var(--accent-primary);
+}
+
+.split-divider::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 24px;
+    height: 60px;
+    background: var(--bg-secondary);
+    border: 2px solid var(--border-primary);
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+/* Horizontal split variant */
+.split-screen-container.horizontal {
+    grid-template-columns: 1fr;
+    grid-template-rows: 1fr 1fr;
+}
+
+.split-screen-container.horizontal .split-divider {
+    top: 50%;
+    left: 0;
+    transform: translateY(-50%);
+    width: 100%;
+    height: 8px;
+    cursor: row-resize;
+}
+
+/* =================================================================
+   LAYOUT ENHANCEMENT 5: FLOATING WIDGET SYSTEM
+   ================================================================= */
+
+/* Floating widget container */
+.floating-widget {
+    position: fixed;
+    background: rgba(22, 27, 34, 0.95);
+    border: 1px solid var(--border-primary);
+    border-radius: 12px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5),
+                0 0 0 1px rgba(255, 255, 255, 0.05) inset;
+    backdrop-filter: blur(20px);
+    z-index: 1000;
+    min-width: 200px;
+    max-width: 500px;
+    display: none;
+    animation: widget-float-in 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.floating-widget.active {
+    display: flex;
+    flex-direction: column;
+}
+
+@keyframes widget-float-in {
+    from {
+        opacity: 0;
+        transform: scale(0.9) translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+/* Widget header with drag functionality */
+.widget-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 12px;
+    background: var(--bg-tertiary);
+    border-bottom: 1px solid var(--border-primary);
+    border-radius: 12px 12px 0 0;
+    cursor: move;
+    user-select: none;
+}
+
+.widget-header:active {
+    cursor: grabbing;
+}
+
+.widget-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-primary);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.widget-actions {
+    display: flex;
+    gap: 6px;
+}
+
+.widget-btn {
+    background: transparent;
+    border: none;
+    color: var(--text-secondary);
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 4px;
+    transition: all 0.2s;
+    font-size: 14px;
+}
+
+.widget-btn:hover {
+    background: var(--bg-overlay);
+    color: var(--text-primary);
+}
+
+/* Widget content area */
+.widget-content {
+    padding: 12px;
+    max-height: 400px;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: var(--border-primary) transparent;
+}
+
+.widget-content::-webkit-scrollbar {
+    width: 6px;
+}
+
+.widget-content::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.widget-content::-webkit-scrollbar-thumb {
+    background: var(--border-primary);
+    border-radius: 3px;
+}
+
+/* Resize handle */
+.widget-resize-handle {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 16px;
+    height: 16px;
+    cursor: nwse-resize;
+    background: linear-gradient(135deg, transparent 50%, var(--border-primary) 50%);
+    border-radius: 0 0 12px 0;
+}
+
+/* Widget positions presets */
+.floating-widget.top-left { top: 80px; left: 20px; }
+.floating-widget.top-right { top: 80px; right: 20px; }
+.floating-widget.bottom-left { bottom: 80px; left: 20px; }
+.floating-widget.bottom-right { bottom: 80px; right: 20px; }
+.floating-widget.center {
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+/* =================================================================
+   LAYOUT ENHANCEMENT 6: ADAPTIVE SPACING & DENSITY CONTROLS
+   ================================================================= */
+
+/* Density mode variables */
+:root {
+    --spacing-xs: 4px;
+    --spacing-sm: 8px;
+    --spacing-md: 12px;
+    --spacing-lg: 16px;
+    --spacing-xl: 24px;
+    --spacing-2xl: 32px;
+
+    --font-size-xs: 11px;
+    --font-size-sm: 12px;
+    --font-size-md: 14px;
+    --font-size-lg: 16px;
+}
+
+/* Compact density mode */
+body.density-compact {
+    --spacing-xs: 2px;
+    --spacing-sm: 4px;
+    --spacing-md: 8px;
+    --spacing-lg: 12px;
+    --spacing-xl: 16px;
+    --spacing-2xl: 20px;
+
+    --font-size-xs: 10px;
+    --font-size-sm: 11px;
+    --font-size-md: 12px;
+    --font-size-lg: 14px;
+}
+
+body.density-compact .sidebar {
+    width: 300px;
+}
+
+body.density-compact .sidebar-section {
+    padding: var(--spacing-md);
+    margin-bottom: var(--spacing-sm);
+}
+
+body.density-compact .btn,
+body.density-compact .btn-icon {
+    padding: var(--spacing-sm);
+    font-size: var(--font-size-sm);
+}
+
+body.density-compact .section-title {
+    font-size: var(--font-size-md);
+    margin-bottom: var(--spacing-sm);
+}
+
+/* Comfortable density mode (default) */
+body.density-comfortable {
+    /* Uses default root variables */
+}
+
+/* Spacious density mode */
+body.density-spacious {
+    --spacing-xs: 6px;
+    --spacing-sm: 12px;
+    --spacing-md: 16px;
+    --spacing-lg: 24px;
+    --spacing-xl: 32px;
+    --spacing-2xl: 48px;
+
+    --font-size-xs: 12px;
+    --font-size-sm: 13px;
+    --font-size-md: 15px;
+    --font-size-lg: 18px;
+}
+
+body.density-spacious .sidebar {
+    width: 420px;
+}
+
+body.density-spacious .sidebar-section {
+    padding: var(--spacing-xl);
+    margin-bottom: var(--spacing-lg);
+}
+
+body.density-spacious .btn,
+body.density-spacious .btn-icon {
+    padding: var(--spacing-md) var(--spacing-lg);
+    font-size: var(--font-size-md);
+}
+
+body.density-spacious .section-title {
+    font-size: var(--font-size-lg);
+    margin-bottom: var(--spacing-md);
+}
+
+/* Adaptive spacing utilities */
+.spacing-xs { gap: var(--spacing-xs); }
+.spacing-sm { gap: var(--spacing-sm); }
+.spacing-md { gap: var(--spacing-md); }
+.spacing-lg { gap: var(--spacing-lg); }
+.spacing-xl { gap: var(--spacing-xl); }
+
+.padding-xs { padding: var(--spacing-xs); }
+.padding-sm { padding: var(--spacing-sm); }
+.padding-md { padding: var(--spacing-md); }
+.padding-lg { padding: var(--spacing-lg); }
+.padding-xl { padding: var(--spacing-xl); }
+
+.margin-xs { margin: var(--spacing-xs); }
+.margin-sm { margin: var(--spacing-sm); }
+.margin-md { margin: var(--spacing-md); }
+.margin-lg { margin: var(--spacing-lg); }
+.margin-xl { margin: var(--spacing-xl); }
+
+/* Responsive text sizing */
+.text-xs { font-size: var(--font-size-xs); }
+.text-sm { font-size: var(--font-size-sm); }
+.text-md { font-size: var(--font-size-md); }
+.text-lg { font-size: var(--font-size-lg); }
 #deckD { animation-delay: 0.4s; }
